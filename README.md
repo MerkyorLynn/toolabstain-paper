@@ -2,7 +2,15 @@
 
 > **The "RLHF tool tax" hypothesis was an accurate snapshot of mid-2025 production cloud LLMs. By Q2 2026 the canonical failure mode it described — verbal hedge in place of tool call when training data is stale — has largely disappeared. Two new failure modes have replaced it: multi-step chain splitting and tool-presence overcalling. We document the disappearance, characterize the residuals, and release a benchmark + mitigation prompt that fixes the residuals at the prompt layer.**
 
-📄 **[Read the paper](paper.md)** · 🔢 **[Question set](questions/questions_v1.md)** · 💾 **[Raw data](data/)** · 🛠 **[Reproduction code](code/)**
+📄 **[Read the paper](paper.md)** · 🔢 **[Question set](questions/questions_v1.md)** · 💾 **[Raw data](data/)** · 🛠 **[Reproduction code](code/)** · 📊 **[Figures](figures/)**
+
+![Production leaderboard — 25 model versions, ToolAbstain-31](figures/fig2_leaderboard.png)
+
+![Cross-family longitudinal trajectory 2025-Q3 → 2026-Q2](figures/fig1_longitudinal_trajectory.png)
+
+![Targeted mitigation prompts fix universal failures](figures/fig3_mitigation_effect.png)
+
+![Per-category heatmap of top 18 models](figures/fig4_category_heatmap.png)
 
 ---
 
