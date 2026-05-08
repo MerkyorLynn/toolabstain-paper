@@ -522,4 +522,195 @@ This work was conducted within the Lynn AI Agent project. We thank OpenRouter fo
 
 ---
 
-*Draft v0.1 · 2026-05-08 · paper section §4.3 cross-family longitudinal data still in collection at time of writing*
+# 中文版 · Chinese Summary
+
+> 此中文版同步整理自上文英文 paper,保留全部数据点与结论,**不是简略翻译**。
+> 写给中文读者(brain 后端工程师 / Agent 系统设计者 / RLHF 研究者)。
+
+---
+
+## 摘要
+
+业界长期流传一个被称为"RLHF 工具拒调税"(RLHF Tool Tax)的假设 —— **对齐后的云端 LLM 系统性地拒绝调用工具**,即便用户的问题需要实时数据(新闻、股价、天气、比分等),模型仍倾向于用过期的训练知识硬答。Lynn 在 2026-04 跑过的一轮 v3 评测(5 家中文云模型 × 12 道实时题)发现这 5 家有 50%+ 的题"只回 content 不调工具",成为这一假设的实证依据。
+
+我们做了**两阶段复现 + 6 家族 28 个历史版本的纵向审计 + 针对性 prompt-level 缓解实验**,共 3290+ 条 LLM 调用,跨 9 个生产 provider 与 6 个家族(DeepSeek / Qwen / GLM / MiniMax / Kimi / MiMo)。**核心 5 条发现**:
+
+1. **2026-04 描述的"拒调"失败模式在 2026-05 几乎消失**。同一组 12 道实时题,9 家中 7 家当代版本 100% 召回工具,远高于一个月前记录的 ~50%。剩 2 家的部分缺失经过 retry 拆解后 90% 是 provider 代理层抖动,不是模型层面真拒。
+
+2. **跨家族纵向轨迹高度异质,普遍的"工具税"假设站不住**:GLM 6 版(2025-09 → 2026-04)仅渐进 +3 分;MiniMax 4 版自 2025-10 起就已饱和;Step 3 版是**唯一**有显著 legacy → modern 跳跃(step-3 = 13/31 → step-3.5 系列 ≈ 65-73%);DeepSeek 因 OpenAI-Compat multi-turn API 契约 bug 整体掉 10-20pp。
+
+3. **Lynn 自部署的 Spark Qwen 3.6 35B-A3B FP8(DGX Spark + vLLM 0.17.1 + qwen3_coder 解析器)以 29/31 = 94% 排进整个 28 版本研究的第一名**,胜过包括 DeepSeek-V4-Pro 与 GLM-5.1 在内的所有同期云端推理模型。这说明**生产端用开源权重做 FP8 本地部署 + 显式工具解析配置,可以在工具调用维度上反超主流云 API**。
+
+4. **两条新的 universal failure 接替了"拒调":**
+   - **多步动作链拆分**(A4 commit+push / A6 translate+email):被请求执行依赖型多步动作时,9 家 95% 的回合只发出第 1 个工具,然后用文字描述第 2 步该怎么做。这是合法的 multi-turn agentic 行为,被单轮 benchmark 误读为"拒调"。
+   - **工具存在性偏差(over-call)**:当工具定义与提问字面对应(如给一个 `translate` 工具问 "翻译 我爱北京天安门"),**18/18 trial × 9 家全部调工具**,即使 parametric 记忆完全够用。该模式在 DeepSeek 6 个历史版本中也是 6/6 全失。
+
+5. **针对性 prompt 缓解有效 —— 但仅当对症下药时**。一段联合 system prompt(① 多步动作请一次性发出全部工具调用 ② 简单 parametric 任务直接回答不调工具)将 A4 (commit+push) 从 0.61 提到 **0.97**、E2 (translate-trivial) 从 0.00 提到 **0.61**,且无可测量的副作用退化。同样 prompt 在已饱和的传统题上零增益。
+
+我们发布 **ToolAbstain-31** —— 一个 6 类(action-verb / long-tail / multi-tool / cutoff / over-call / borderline)的 31 题对抗集 + 多轮执行评估 + confirmation-flow 评分 + 全部 raw call 痕迹与可复现 harness,全部代码与数据 MIT 协议开源。
+
+---
+
+## §1 引言:为什么要做这个研究
+
+Lynn(本作者)的产品是一个 Electron 全栈的 AI Agent + brain 后端 + 自部署 GPU 模型,brain 端 OpenAI-compat 路由层每天承接千级别的真实用户工具调用请求。我们最早的工程动机很功利:**chat order 选哪几家云 fallback,谁工具调用最稳**。
+
+2026-04 的 v3 评测得出"5 家云 LLM 系统性 50% 拒调"结论后,业内同行讨论也用这个数据为"RLHF 安全对齐副作用"做支撑。但**一个月后,我们想跑同一组题做监控,发现现象消失了**。这驱动我们做了三件事:
+
+- (A) **复现**:同组题 9 家最新版本能不能再现 2026-04 的失败率
+- (B) **纵向**:每个家族能拿到的全部历史版本(OpenRouter date-pinned snapshots + 各家直连 API archived models)上跑同一份题,定位"拒调如果消失了,在哪个版本号消失的"
+- (C) **缓解**:既然拒调假设可能站不住,那现在的 LLM 工具失败模式是什么,prompt 层面能修到什么程度
+
+执行过程中(A)否定了"拒调持续广泛存在"的强假设;(B)发现失败模式高度异质;(C)挖出两条新的 universal failure 模式并给出可量化的 prompt 修法。这就是本 paper 的核心贡献。
+
+---
+
+## §3 方法概览
+
+### 3.1 题集演进
+
+- **v0(30 题)**:复刻 Lynn 2026-04 v3 题集 + 3 道 SHOULDN'T_CALL 控制组
+- **v1 / ToolAbstain-31(31 题)**:饱和题剔除(D 类全删 5 留 1 sanity / B/C/E 各砍掉 ≥95% 通过率题)+ 新增 8 道 over-call 探针(E2/5/7-12)+ 5 道 sound-real 长尾(B7-B11)+ 4 道动作型 action-verb(A7 删文件 / A8 重启服务 / A9 关 GitHub issue)+ 6 道带多轮执行评估的题(A4mt/A6mt/A9mt/C2mt/C7mt/C8mt)+ 4 道 borderline calibration
+
+### 3.2 验证器(verifier)
+
+7 类机器自动验证器,无需人工 audit:
+
+- `tool_match`:期望工具集 ∩ 实际触发工具集 ≠ ∅
+- `multi_turn`:跨多轮(harness 自动喂假 tool result)累计期望工具调用次数 ≥ min_calls
+- `hedge_grep`:扫描 content 中的明示拒绝短语("我无法 / 我不能 / 只能查不能…")
+- `confirm_grep`:对动作型危险题,识别"请确认 / 转账信息:" 等 confirmation flow 关键词,**视为正确产品行为而非失败**
+- `halluc_grep`:B 类题用题型专用正则(数字/比分/价格)扫 fabricate
+- `stale_grep`:D 类题提取 content 中所有日期锚,若全部 ≤ 2025-12 → 判 stale
+- `specificity`:E 类(SHOULDN'T_CALL)严格 0 工具调用判通过
+
+### 3.3 Provider 矩阵 + 纵向访问路径
+
+9 家生产 provider 直连 API + OpenRouter 提供 28 个 date-pinned 历史 snapshot + Lynn 自部署 Spark Qwen 3.6 35B-A3B FP8 经 SSH 隧道访问。共 3290+ 条调用,具体分布见英文 paper §3。
+
+---
+
+## §4 主要发现
+
+### 4.1 复现实验:原假设失效
+
+```
+2026-04 v3 → 2026-05 同 12 题(同方法、同 tool list、单 trial)
+GLM-5-Turbo:     6/12 (50%) → 12/12 (100%)
+Kimi K2.5:       6/12 (50%) → 10/12 (83% — 含 1 例真 hedge,2 例代理层抖动)
+MiniMax M2.7:    5/12 (42%) → 12/12 (100%)
+Step-3.5-Flash:  6/12 (50%) → 11/11 (100%, 1 RPM 错丢)
+DeepSeek V3.2 → V4-Flash: 6/12 (50%) → 12/12 (100%)
+```
+
+5 家全部触底反弹至 ≥83% 召回率,4 家直接 100%。**普遍"拒调"在 2026-05 不再可观察**。
+
+### 4.2 - 4.3 纵向定位"消失点"
+
+每家"消失轨迹"形态完全不同(详见英文版 §4.3):
+
+| 家族 | 走势 | 转折版本 |
+|---|---|---|
+| GLM | 25 → 26 → 26 → 27 → 27 → 28(+3 渐进) | 无单一转折,GLM-4.5 起就已 80%+ |
+| MiniMax | 27 → 28 → 27 → 27(早期饱和) | 无 |
+| Step | **13 → 20 → 22.5(+9.5 大跃迁)** | step-3 → step-3.5 |
+| DeepSeek | 18 → 16 → 16 → 19 → 13(API bug 拖累) | 无清晰单一转折 |
+| Qwen | Qwen3-Max=26;Spark FP8=29(本地部署最佳) | 无横跨数据 |
+
+**Step-3(2025-Q3 发布)= 13/31 是 28 个数据点中唯一显著支持原"拒调"假设的样本**。Lynn 2026-04 的 v3 评测把这个特定时期、特定模型的现象错误外推为整个生态系统的普遍规律。
+
+### 4.4 ToolAbstain-31 排行榜
+
+- Lynn Spark Qwen3.6-35B-A3B-FP8: **29/31 = 94%** ⭐(第 1)
+- GLM-5.1 / MiniMax-M2.1: 28/31 (并列 第 2)
+- 第 3-7 集中 27/31(GLM-5 / GLM-5-Turbo / MiniMax-M2 / MiniMax-M2.5 / MiniMax-M2.7 / MiMo-2.5-Pro)
+- 末位:legacy step-3 = 13/31
+
+discrimination range 从经典 12 题的 12% 扩展到 ToolAbstain-31 的 23%。
+
+### 4.5 三条 universal failure(跨 9 当代 + 6 历史)
+
+#### A. 多步动作链拆分
+
+GLM-5-Turbo / DeepSeek-V4-Flash / MiniMax-M2.7 在 A4 (`commit then push`) 上的典型回复都是"好,我先 commit 再 push" + 仅触发 `git_commit` 一个工具。这**不是拒调,是合法的 agentic 多轮规划**。当 harness 喂假 tool result 让模型继续,4/7 家在第 2 轮正确触发 `git_push`。
+
+**结论**:单轮 benchmark 把正确多轮规划误读为失败。需要 multi-turn evaluation 才能区分"真的拒调"与"在合理分轮"。
+
+#### B. 工具存在性偏差(over-call)
+
+题:`帮我把"我爱北京天安门"翻译成英文`(给定 `translate` 工具)
+结果:**18/18 trial × 9 家全调 translate**;DeepSeek 6/6 历史版本同样全调。
+
+模型即使在 `<think>` 阶段已经知道答案("I love Tiananmen Square in Beijing"),仍然在最终输出阶段选择调工具。**RLHF 在工具使用数据上的过拟合,造成"只要有匹配工具就用"的反向偏差**,正好与原"拒调"假设相反。
+
+#### C. action-verb 路由错误
+
+DeepSeek-V4-Flash 在 A2(订高铁)上 4/6 次触发 `web_search` 而不是 `book_train` —— 即使两者都在工具列表里。这是工具描述设计问题,不是模型层 RLHF 问题。
+
+---
+
+## §5 缓解实验
+
+### 5.1 阶段 1 失败:经典题已饱和无 headroom
+
+在 spike v0 阶段在 3 家 × 7 题做了 4 条件对照(裸 baseline / 强 system prompt / few-shot / `tool_choice=required`),结论:**经典题已 100% 召回,prompt-layer 干预 0 增益**。`tool_choice=required` 强制开火但破坏 specificity(创作题/物理题也被强制调出无意义 tool_calls)。
+
+### 5.2 阶段 2 成功:针对性 prompt 修 universal failure
+
+在 9 家 × 3 道 universal failure 题(A4 / A6 / E2)× 4 条件 × 2 trial = 216 calls 上跑:
+
+| 题 | 失败方向 | M0 baseline | M1 chain prompt | M2 parametric pref | **M3 combined** |
+|---|---|---|---|---|---|
+| A4 commit+push | 链拆分 | 0.61 | **0.94 ⭐** | 0.64 | **0.97 ⭐⭐** |
+| A6 translate+email | 链拆分 | 0.50 | 0.47 | 0.56 | **0.61** |
+| E2 翻译"我爱北京天安门" | over-call | **0.00 ⚠️** | 0.00 | **0.67 ⭐** | **0.61 ⭐** |
+
+- M1(链 prompt)**单独修 A4 +33pp**,但对 over-call 无效
+- M2(parametric prompt)**单独修 E2 +67pp**,但 A 类略损
+- **M3 combined 同时修 A4 +36pp 和 E2 +61pp,无可测副作用** ⭐ **生产最优**
+
+### 5.3 生产推荐 prompt(已部署 Lynn brain 默认 system prefix)
+
+```
+你是一个 AI 助手,可以调用工具。两条规则:
+1. 多步骤执行型任务(commit+push、translate+email 等):
+   在一次性回复内调用所有需要的工具,不要分回合。
+2. 简单 parametric 任务(基础翻译、常识、简单数学):
+   直接给出答案,不要调用工具。
+```
+
+A6(translate+email)是唯一未被这条 prompt 修复的题 —— 因为它处在"简单 parametric"和"执行"的边界,没有 prompt 能在一次性把这层语义模糊性消解。
+
+---
+
+## §6 局限
+
+- 闭源云模型权重无版本控制,后续可能漂移(纵向数据用 OR date-pinned 部分缓解)
+- 多数纵向数据 N=1 trial,CI 偏宽 —— 但 ceiling/floor 强信号(E2 18/18)CIs 接近 0
+- 没有直接因果干预 RLHF —— 仅相关性证据,等待 OLMo 2 / Tulu 3 ckpt sweep 后续工作
+- 仅覆盖 6 家中文家族,未含 OpenAI / Anthropic / Google
+- 全中文题集,英文 prompt 可能呈现不同模式
+
+---
+
+## §7 复现 & 引用
+
+代码 + 数据 + Figure 生成脚本 + paper 全文:
+
+> https://github.com/MerkyorLynn/toolabstain-paper
+
+预估复现成本:OpenRouter API 端 longitudinal ~$5-15;直连 9 家 baseline ~$2-5;纯 Python stdlib + matplotlib 即可,无外部依赖。
+
+引用格式参见英文版结尾 BibTeX。
+
+---
+
+## §8 结论一句话
+
+> **"RLHF 工具拒调税"是 2025 年中期一个具体生命周期的快照,而不是结构性的对齐副作用。到 2026-Q2,主要中文云 LLM 已经普遍修复了这一现象。但取而代之的是两个新失败模式 —— 多步动作链拆分(被现有 benchmark 误判为拒调)与工具存在性 over-call(从未被系统化测试过)—— 这两个失败模式才是当代 production agent 设计真正需要解决的问题。**
+
+为生产 agent 设计者:把缓解力气从"逼模型多调工具"挪到"让模型在正确的回合调正确粒度的正确工具"。这是不同的工程任务,需要不同的工具箱。
+
+---
+
+*Draft v0.1 · 2026-05-08 · 中文版同步于英文版 commit `e098a75`*
