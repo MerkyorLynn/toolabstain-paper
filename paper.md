@@ -116,6 +116,10 @@ For multi-turn questions, the harness feeds a fake `tool_result` JSON for each t
 
 ## §4 Results
 
+![ToolAbstain-31 leaderboard across 25+ model versions](figures/fig2_leaderboard.png)
+
+**Figure 1.** ToolAbstain-31 leaderboard across 25 model versions × 6 families × 9 production providers (2025-Q3 → 2026-Q2). Lynn-deployed Spark Qwen 3.6 35B-A3B FP8 (gold) tops the field at **29/31 = 94%**, beating every contemporary cloud reasoner. The legacy step-3 (2025-Q3) at 13/31 anchors the bottom and represents the only family-version where the original "RLHF tool tax" hypothesis is empirically supported on this benchmark. All other 2025-Q3 → 2026-Q2 versions score 52-94%.
+
 ### §4.1 Replication: the canonical failure mode has disappeared
 
 Running 12 canonical SHOULD_CALL queries × 9 providers × 1 trial (n=108) on 2026-05-08:
@@ -181,6 +185,10 @@ Notably:
 ### §4.3 Cross-family longitudinal
 
 We extend the DeepSeek case study to 4 additional Chinese families using direct provider APIs (n=403 calls) plus 1 Lynn-deployed local FP8 reference. Total 28 model-version data points spanning 2025-09 → 2026-04.
+
+![Cross-family longitudinal trajectory 2025-Q3 → 2026-Q2](figures/fig1_longitudinal_trajectory.png)
+
+**Figure 2.** Cross-family longitudinal trajectory of ToolAbstain-31 score over 7 months. Each line is one Chinese cloud LLM family across its OpenRouter / direct-API-accessible historical versions. Lynn-deployed Spark Qwen 3.6 35B-A3B FP8 (gold ★) at 94% is the global maximum. Step (orange) shows the only sharp legacy-to-modern jump (step-3 = 42% → step-3.5 series ≈ 65-73%), consistent with the original "RLHF tool tax" hypothesis applying to a specific 2025-Q3-era model that the 2026-04 study generalized too broadly. GLM (mint), MiniMax (purple), and Qwen 3-Max (pink) were already at 80-87% by their earliest 2025-09 / 2025-10 versions and remained there. DeepSeek (cyan) sits 10-20pp below the cohort due to a multi-turn API contract bug (§4.6) that disproportionately affects our chained-action questions, not a model-level deficit.
 
 #### §4.3.1 GLM (Zhipu, 6 versions)
 
@@ -268,6 +276,10 @@ On 9 production providers × 31 questions × 1 trial:
 | DeepSeek-V4-Flash | 3.0 | 6.0 | 1.0 | 1 | 5.0 | 4.0 | 20.0 | A worst, multi-turn errors |
 
 Discrimination range: **20.0 ↔ 27.0 = 7 of 31 = 23%** vs. 12% on canonical-only set. ToolAbstain-31 generates more separation per question, more failure-mode coverage, and surfaces the 3 universal failure modes characterized in §4.5.
+
+![Per-category heatmap, top 18 model versions × 6 categories](figures/fig4_category_heatmap.png)
+
+**Figure 3.** Per-category pass rate heatmap (top 18 model versions × 6 question categories). Lynn Spark FP8 (top row) scores 100% on all categories except E (over-call) at 75%. **Column E is the universally weakest column across all 18 versions** (50-75% range), confirming that tool-presence overcalling is a generic contemporary failure mode regardless of vendor. The two red cells in column D belong to step-3.5 generation (cutoff knowledge weak — likely a training-data freshness limit specific to that lineage). DeepSeek V3.x family shows red in column E (over-call) and column F (borderline calibration). Cells annotate the actual pass rate as integer percent.
 
 #### §4.4.1 Per-question pass rates (across 9 providers × 2 trials = 18 trials each, from v0 run for breadth)
 
@@ -389,6 +401,10 @@ Mean score per question per condition (n=18 trials each, 9 providers × 2 trials
 | A6 | translate + send_email | SHOULD | 0.50 | 0.47 | 0.56 | **0.61** |
 | E2 | translate "我爱北京天安门" | SHOULDN'T | **0.00** ⚠️ | 0.00 | **0.67** ⭐ | **0.61** ⭐ |
 
+![Targeted prompt mitigations across 3 universal failures](figures/fig3_mitigation_effect.png)
+
+**Figure 4.** Targeted prompt mitigations on the 3 universal failure questions (n=18 trials each: 9 providers × 2 trials). Bars are color-coded: M0 baseline (slate), M1 chain instruction (cyan), M2 parametric preference (mint), M3 combined (coral). M3 simultaneously fixes A4 (chain split, **0.61 → 0.97**, +0.36) and E2 (universal over-call, **0.00 → 0.61**, +0.61) with no measurable degradation. M1 alone helps A4 only; M2 alone helps E2 only; their combination retains both gains. A6 (translate+email chain) is the residual unfixed failure — the trivial-parametric / execution boundary on this specific question is ambiguous enough that no single prompt resolves it.
+
 **Findings:**
 
 - **M1 (chain instruction) → A4 +33pp** (0.61 → 0.94). The model emits both `git_commit` and `git_push` in a single turn 95% of the time when explicitly told to. This is a **clean prompt-layer fix for multi-step chain splitting** on this specific kind of action.
@@ -429,11 +445,13 @@ Lynn brain has now integrated this prompt as the default system prefix for all 9
 
 ## §7 Reproducibility
 
-All harness code, question sets, raw call traces (JSON), aggregate tables, and analysis scripts are released at `https://github.com/MerkyorLynn/toolabstain-paper`. The release includes:
+All harness code, question sets, raw call traces (JSON), aggregate tables, analysis scripts, and figure-generation source are released at `https://github.com/MerkyorLynn/toolabstain-paper`. The release includes:
 
 - `harness_v1.py` — 31-question v1 harness with multi-turn execution + 6 verifier types
-- `longitudinal_all_families.py` — cross-family longitudinal harness (28 versions)
-- `data/*.json` — all raw call traces (n=2,287+ baseline + n=868+ longitudinal)
+- `longitudinal_all_families.py` + `longitudinal_direct.py` — cross-family longitudinal harness (28 versions, dual-route via OpenRouter + direct provider APIs)
+- `mitigation_test.py` — 4-condition × 3-question prompt mitigation study harness
+- `make_figures.py` — regenerates Figures 1-4 from the JSON traces; matplotlib + numpy only, no other deps
+- `data/*.json` — all raw call traces (n=2,287+ baseline + n=868+ longitudinal + n=216 mitigation)
 - `questions_v1.md` — question design rationale + verifier specifications
 - `paper.md` — this document
 - `run.sh` — single-command reproduction
