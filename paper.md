@@ -361,6 +361,46 @@ Despite `book_train` and `search_train` being defined in the tool list, the mode
 
 This pattern appears 4/6 times for DeepSeek-V4-Flash on A2/A3/A6, contributing significantly to its A-class score of only 4/12 (worst among 9 providers).
 
+### §4.6.5 Brain wrapper controlled experiment — was the original 50% refusal due to model RLHF or brain prompt injection?
+
+A reviewer-anticipating concern: Lynn (2026-04 v3) collected its data via the **Lynn brain proxy layer** at `127.0.0.1:8789`, which (a) injects a system prompt and (b) handles tool-call normalization. The 2026-05 replication in §4.1 queried provider APIs directly, bypassing brain. **This introduces a confounding variable**: the apparent disappearance of the failure mode could be due to model improvement OR due to brain-side preprocessing changes.
+
+We extracted the **exact v3-era brain system prompt** from `/opt/lobster-brain/server.js.bak-20260420-162011` (`buildSystemPrompt` queryMode=false branch + `TOOL_FORCE_INSTRUCTIONS`). The prompt explicitly instructed models to call tools for real-time data:
+
+```
+你是 Lynn，语气自然友好，默认 1-3 句话完成回复。
+
+【重要】实时数据（价格、天气、比分、新闻等）必须调工具获取，不可编造。
+工具失败时说明"未获取到数据"。
+...
+总之：有工具可用时，必须调用工具，不要用文本模拟工具的输出。
+```
+
+**Note**: this means in v3, the brain was *already* prompting models to call tools — yet the recorded refusal rate was 50%. If the v3 brain prompt had been weak, adding stronger prompting (a natural mitigation strategy) might have helped. **It didn't, because the prompt was already strong but the models still refused.**
+
+We ran a controlled A/B test on 7 cloud providers × 12 SHOULD_CALL questions × 1 trial:
+
+| Provider | Naked direct API | + v3 brain system prompt | Δ |
+|---|---|---|---|
+| DeepSeek-V4-Pro | 12/12 (100%) | 12/12 (100%) | 0 |
+| DeepSeek-V4-Flash | 12/12 (100%) | 11/12 (91.7%) | **−8.3 pp** |
+| GLM-5-Turbo | 12/12 (100%) | 12/12 (100%) | 0 |
+| GLM-5.1 | 12/12 (100%) | 12/12 (100%) | 0 |
+| Step-3.5-Flash | 10/10 (100%, 2 RPM) | 10/10 (100%) | 0 |
+| MiniMax-M2.7 | 12/12 (100%) | 12/12 (100%) | 0 |
+| MiMo-2.5-Pro | 12/12 (100%) | 12/12 (100%) | 0 |
+
+Findings:
+1. **6 of 7 providers: brain prompt has zero effect.** Models call tools at 100% with or without it.
+2. **DeepSeek-V4-Flash regressed by 8.3 pp under the brain prompt** — i.e., the prompt *reduced* tool-calling, not increased it. The single failure was on W2 (book train ticket): the model said "我需要先确认今天日期" rather than calling `search_train`. This is the **opposite direction** from what a "brain prompt induces refusal" hypothesis would predict.
+
+Interpretation:
+- **Strongly supports the model-side disappearance hypothesis (§4.1, §4.2).** The variable that changed between Lynn 2026-04 and our 2026-05 replication is the model, not the brain prompt (which was always present and is a constant in this experiment).
+- We cannot fully exclude the possibility that v3-era brain had additional non-prompt behaviors (e.g., tool-call name normalization, BYOK routing logic) that contributed to the original 50% refusal rate. Those layers are not directly reproducible because brain has been simplified since v3 (current brain v1 routes all requests to MiMo regardless of model id; brain v2 is a separate rewrite).
+- **The remaining caveat is therefore narrower than initially stated**: model-side changes are the dominant variable; brain non-prompt logic is at most a secondary contributor.
+
+Raw data: `data/v3_brain_prompt_replica_20260508_230150.json`; reproduction script: `code/spike_v3_brain_prompt_replica.py`.
+
 ### §4.6 Multi-turn provider-bug discovery
 
 DeepSeek-V4-Pro and V4-Flash had 6 errors each on 4 multi-turn questions (out of 4 questions × 1 trial × 2 reasoner variants = 8 attempts → 6 failed). Other providers had 0 multi-turn errors. Inspection of error responses indicates the DeepSeek API rejects assistant messages with `tool_calls` field if `content` is empty string vs. null — a contract incompatibility with OpenAI's reference behavior. *We are reaching out to DeepSeek's developer relations to confirm.*
@@ -434,6 +474,8 @@ Lynn brain has now integrated this prompt as the default system prefix for all 9
 ---
 
 ## §6 Limitations
+
+- **Brain wrapper layer differs between v3 and replication.** Lynn (2026-04 v3) routed cloud LLM queries through the Lynn brain proxy at `127.0.0.1:8789` (which injects a system prompt and normalizes tool-call format), while our 2026-05 replication queried provider APIs directly. We addressed this in §4.6.5 with a controlled experiment that injects the exact v3-era brain system prompt: 6 of 7 providers showed zero change in tool-call recall; the remaining one (DeepSeek-V4-Flash) regressed slightly under the brain prompt, the opposite direction of the alternative hypothesis. We conclude the model-side change is the dominant variable, but brain v1 from the v3 era can no longer be re-deployed (its routing logic was simplified post-2026-04 and current brain returns MiMo for all model IDs), so we cannot rule out non-prompt brain effects (e.g., tool-call format normalization, BYOK routing) entirely.
 
 - **Closed-source model versioning.** "GLM-5-Turbo" / "DeepSeek V4-Flash" / etc. on production endpoints can change weights silently. We log API version headers but cannot guarantee weight stability between our calibration phase (2026-04) and replication phase (2026-05). The longitudinal section uses date-pinned OpenRouter snapshots, which mitigates this for that section.
 - **Single-trial budget.** Most longitudinal data is N=1 trial per question; v0 had N=2 trials per question. 95% confidence intervals on per-question pass rates are wide for the longitudinal data. We accept this as a pilot and flag specific findings (e.g., E2 18/18) where ceiling/floor effects make CIs effectively zero.

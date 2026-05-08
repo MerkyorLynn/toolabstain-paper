@@ -1,0 +1,2409 @@
+{
+  "benchmark": "v3 brain prompt replica",
+  "ts": "2026-05-08T23:16:20.245459",
+  "system_prompt": "你是 Lynn，语气自然友好，默认 1-3 句话完成回复。\n\n【重要】实时数据（价格、天气、比分、新闻等）必须调工具获取，不可编造。工具失败时说明\"未获取到数据\"。\n\n- 简单问题直接回答，复杂任务可详细展开\n- 不扮演虚构角色，不卖萌\n\n## 工具使用强制规则\n\n当用户请求分析报告、研究报告、深度分析时：\n1. 先调用 stock_research 工具获取真实财务数据（如果是股票相关）\n2. 然后调用 create_report 工具，将数据组织为结构化 JSON 传入，由工具渲染专业 HTML 报告\n3. 绝不要在消息正文中直接输出长篇报告文本\n\n当用户请求做 PPT / 幻灯片 / 演示文稿时：\n1. 调用 create_pptx 工具，传入结构化的 slides 数组\n2. 绝不要输出 Python 脚本或代码来生成 PPT\n\n当用户请求做 HTML 页面、可视化、图表页面时：\n1. 调用 create_artifact 工具（type=html），传入完整 HTML 代码\n2. 或者调用 create_report 工具生成结构化报告\n\n总之：有工具可用时，必须调用工具，不要用文本模拟工具的输出。\n",
+  "raw": [
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "N1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "我来同时搜索科技、经济和国际三大领域的今日新闻。",
+      "content_len": 24,
+      "latency_ms": 7129,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "N2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 6057,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "E1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "我来帮你搜一下近期口碑不错的华语悬疑片，然后再按豆瓣评分排个序。",
+      "content_len": 32,
+      "latency_ms": 5977,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "E2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "好的！我先搜索2026年春节档的电影阵容，同时查几部已知热门作品的详细信息。",
+      "content_len": 38,
+      "latency_ms": 5743,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "好的，我先查下上海最近一周的天气趋势。",
+      "content_len": 19,
+      "latency_ms": 6732,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5471,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "我来同时查询这三家公司的股票信息。",
+      "content_len": 17,
+      "latency_ms": 8226,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "好的！我先帮您查一下后天（2025年11月1日）北京到上海的高铁班次。",
+      "content_len": 35,
+      "latency_ms": 6095,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "F1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_stock",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 9401,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "F2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_crypto",
+        "web_search"
+      ],
+      "content_head": "好的，我先同时查一下比特币的当前价格，以及看看是否有关于 2026 年 3 月 1 日的比特币期货或预测数据。",
+      "content_len": 55,
+      "latency_ms": 11049,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "S1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4495,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "naked",
+      "qid": "S2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5135,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "N1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 6481,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "N2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "我先搜索一下两个模型的最新信息。",
+      "content_len": 16,
+      "latency_ms": 5208,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4209,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "好的，我先搜一下2026年春节档有哪些电影，然后同时查它们的信息。",
+      "content_len": 33,
+      "latency_ms": 5497,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "好的，我先确认下今天是几号，然后帮你查上海下周一到周三的天气。",
+      "content_len": 31,
+      "latency_ms": 9072,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "好的，我先查一下北京的天气情况。",
+      "content_len": 16,
+      "latency_ms": 5735,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 7001,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "好的！我先确认一下今天的日期，然后帮你查询高铁票。",
+      "content_len": 25,
+      "latency_ms": 10701,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "F1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_stock",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 7000,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "F2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_crypto",
+        "web_search"
+      ],
+      "content_head": "让我同时获取比特币当前价格和历史数据。",
+      "content_len": 19,
+      "latency_ms": 8770,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "S1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "好的，让我来查一下昨天NBA的比赛情况。",
+      "content_len": 20,
+      "latency_ms": 3895,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3888,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "N1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "好的，我来搜索一下今天国内外各领域的大新闻！",
+      "content_len": 22,
+      "latency_ms": 3774,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "N2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3735,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "E1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2487,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2500,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "好的！我先查一下今天是几号，然后确定下周一到周三的具体日期。",
+      "content_len": 30,
+      "latency_ms": 3534,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "好的！我先查一下北京今天的天气，看看温度情况。",
+      "content_len": 23,
+      "latency_ms": 3381,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "好的！我来同时查询这三家公司的股价信息。",
+      "content_len": 20,
+      "latency_ms": 5518,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "好的！我先查一下后天是几号，然后搜索北京到上海的高铁信息。",
+      "content_len": 29,
+      "latency_ms": 3718,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "F1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_stock",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3018,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "F2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3950,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "S1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3314,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "naked",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1970,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "N1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "好的，我来搜索一下今天各领域的热点新闻！",
+      "content_len": 20,
+      "latency_ms": 3569,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "N2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2906,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2106,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2057,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "好的，我先查一下下周的具体日期，然后查上海这3天的天气！",
+      "content_len": 28,
+      "latency_ms": 2879,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2311,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "好的，我来查一下这三家公司今天的股价情况！",
+      "content_len": 21,
+      "latency_ms": 5057,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "W2",
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "好的，我来查一下后天从北京到上海的高铁信息！不过我需要先确认一下今天的日期，请问今天是几月几号呢？这样我才能准确查询后天的车次 😊",
+      "content_len": 65,
+      "latency_ms": 5182,
+      "error": null,
+      "score": 0
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "F1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content_head": "好的，我来查一下上证指数今日的数据！",
+      "content_len": 18,
+      "latency_ms": 4830,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "F2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_crypto",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4155,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "S1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2642,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "我来搜索一下中国男足最近的世界杯预选赛信息。",
+      "content_len": 22,
+      "latency_ms": 2446,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "N1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "我来为您搜索今天三大领域的最新重要新闻。",
+      "content_len": 20,
+      "latency_ms": 3305,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "N2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1716,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1839,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "我先帮你搜索2026年春节档有哪些电影，然后同时查询它们的详细信息。",
+      "content_len": 34,
+      "latency_ms": 2062,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2033,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2324,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "好的，我同时帮您查询阿里巴巴、腾讯和美团的股价信息！",
+      "content_len": 26,
+      "latency_ms": 2109,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "好的，我先帮您查询后天从北京到上海的高铁时刻表。请稍等！",
+      "content_len": 28,
+      "latency_ms": 4334,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "F1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "我来帮您查询上证指数的最新行情以及一周前的数据。",
+      "content_len": 24,
+      "latency_ms": 1835,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "F2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_crypto",
+        "web_search"
+      ],
+      "content_head": "我来帮你查询比特币的当前价格以及2026年3月1日的价格。",
+      "content_len": 29,
+      "latency_ms": 2144,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "S1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1519,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "naked",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1509,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "N1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "我来帮你搜索一下今天各领域的重要新闻。",
+      "content_len": 19,
+      "latency_ms": 2527,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "N2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1975,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1777,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2731,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1187,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2204,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3336,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "我帮你查一下后天从北京到上海的高铁班次，稍等。",
+      "content_len": 23,
+      "latency_ms": 5853,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "F1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2117,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "F2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_crypto",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2508,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "S1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1493,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5-Turbo",
+      "condition": "v3_brain_prompt",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2302,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "N1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "我来为你搜索今天国内外三大领域的重大新闻！",
+      "content_len": 21,
+      "latency_ms": 10217,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "N2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "我来帮你查询 DeepSeek 最新发布的模型以及 Qwen3.6 的相关信息。",
+      "content_len": 40,
+      "latency_ms": 7976,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "E1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5321,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5660,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "好的，我来帮您查一下上海的天气情况！",
+      "content_len": 18,
+      "latency_ms": 9309,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 7136,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "我来同时帮您查询这三家公司的股价信息！",
+      "content_len": 19,
+      "latency_ms": 10339,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "我来帮您查询一下后天从北京到上海的高铁信息！先搜索一下时刻表。",
+      "content_len": 31,
+      "latency_ms": 15374,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "F1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_stock",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 7810,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "F2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_crypto",
+        "web_search"
+      ],
+      "content_head": "我来帮你查询比特币的当前价格，同时搜索一下相关信息。",
+      "content_len": 26,
+      "latency_ms": 18867,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "S1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5272,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "naked",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4867,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "N1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "好的，我来帮你搜索一下今天各领域的重大新闻！",
+      "content_len": 22,
+      "latency_ms": 7393,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "N2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 8611,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5596,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5625,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4176,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 6314,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "好的，马上帮你查三家的股价！",
+      "content_len": 14,
+      "latency_ms": 8712,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "我来帮你查一下北京到上海的高铁时刻表！",
+      "content_len": 19,
+      "latency_ms": 17890,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "F1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_stock",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 11070,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "F2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_crypto",
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 11727,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "S1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 9133,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "GLM-5.1",
+      "condition": "v3_brain_prompt",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3393,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "N1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "我来为您搜索今天最重要的新闻，涵盖科技、经济、国际三个领域。",
+      "content_len": 30,
+      "latency_ms": 1259,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "N2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "我来帮您搜索 DeepSeek 最新发布的模型信息，以及 Qwen3.6 的相关信息进行对比。",
+      "content_len": 47,
+      "latency_ms": 837,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "我来帮你搜索最近好看的华语悬疑片及其豆瓣评分排名。",
+      "content_len": 25,
+      "latency_ms": 953,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1154,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "我来帮您查询上海的天气情况。",
+      "content_len": 14,
+      "latency_ms": 1139,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "我来帮您查询北京未来几天的天气情况。",
+      "content_len": 18,
+      "latency_ms": 1026,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "我来帮您查询阿里、腾讯、美团三家公司的股价和涨跌幅。",
+      "content_len": 26,
+      "latency_ms": 1779,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "我来帮您查询后天从北京到上海的高铁车次信息。",
+      "content_len": 22,
+      "latency_ms": 1825,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "F1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content_head": "我来帮您查询上证指数的当前价格，并计算与一周前的涨跌幅。",
+      "content_len": 28,
+      "latency_ms": 2127,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "F2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content_head": "我来帮您查询比特币的当前价格。",
+      "content_len": 15,
+      "latency_ms": 1505,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "S1",
+      "error": "HTTP 429: {\"error\":{\"message\":\"request limited RPM reached, current: 11, limit: 10. Please top up at https://platform.stepfun.com/top-up. Rate limit rules: https://platform.stepfun.com/docs/zh/pricing/details#%",
+      "latency_ms": 199,
+      "score": null
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "naked",
+      "qid": "S2",
+      "error": "HTTP 429: {\"error\":{\"message\":\"request limited RPM reached, current: 11, limit: 10. Please top up at https://platform.stepfun.com/top-up. Rate limit rules: https://platform.stepfun.com/docs/zh/pricing/details#%",
+      "latency_ms": 213,
+      "score": null
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "N1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1029,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "N2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1088,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 939,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1130,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1368,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1034,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "W1",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2916,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 1115,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "F1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 840,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "F2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 852,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "S1",
+      "error": "HTTP 429: {\"error\":{\"message\":\"request limited RPM reached, current: 11, limit: 10. Please top up at https://platform.stepfun.com/top-up. Rate limit rules: https://platform.stepfun.com/docs/zh/pricing/details#%",
+      "latency_ms": 270,
+      "score": null
+    },
+    {
+      "provider": "Step-3.5-Flash",
+      "condition": "v3_brain_prompt",
+      "qid": "S2",
+      "error": "HTTP 429: {\"error\":{\"message\":\"request limited RPM reached, current: 11, limit: 10. Please top up at https://platform.stepfun.com/top-up. Rate limit rules: https://platform.stepfun.com/docs/zh/pricing/details#%",
+      "latency_ms": 227,
+      "score": null
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "N1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "<think>\n用户需要今天的新闻，要3条不同领域的（科技/经济/国际），按影响力排序。我需要搜索新闻来获取最新信息。\n</think>\n\n我来帮你搜索今天国内外的重要新闻，涵盖科技、经济和国际三个领域。\n",
+      "content_len": 103,
+      "latency_ms": 2472,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "N2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "<think>\n用户询问两个问题：\n\n1. DeepSeek最近发布了什么新模型？\n2. 对比Qwen3.6的发布时间和参数规模\n\n我需要搜索这两个信息，然后进行对比并给出结论。\n\n让我同时搜索这两个主题。\n</think>\n\n我来帮你搜索这两家公司的最新模型发布信息，然后进行对比分析。\n",
+      "content_len": 145,
+      "latency_ms": 2485,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "<think>\n用户想要了解最近好看的华语悬疑片，并且要求按豆瓣评分排序，告诉我前3名。这个问题我需要搜索一下最新的华语悬疑片信息和豆瓣评分情况。\n\n我需要使用web_search来搜索相关信息。搜索关键词应该是关于华语悬疑片、豆瓣评分等内容。\n</think>\n\n我来帮你搜索一下最近好看的华语悬疑片信息。\n",
+      "content_len": 155,
+      "latency_ms": 2205,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "<think>\n用户想了解2026年春节档的三部电影以及它们的豆瓣评分和导演信息。让我先搜索一下2026年春节档的电影信息。\n</think>\n\n\n",
+      "content_len": 74,
+      "latency_ms": 1172,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "<think>\n用户要去上海出差3天（周一到周三），需要查询天气。但是用户没有给出具体的日期是哪一周。我需要先确定下周一是哪一天。\n\n当前时间是2023年8月25日（周五），所以下周一是2023年8月28日。\n\n让我查询上海8月28日、29日、30日的天气。\n</think>\n\n\n",
+      "content_len": 141,
+      "latency_ms": 2039,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "<think>\n用户想知道北京今天、明天、后天的温度，并询问哪一天最适合穿短袖。\n\n我需要查询北京的天气情况。当前日期是2025-12-19，所以需要查询今天(12-19)、明天(12-20)和后天(12-21)的天气。\n\n让我调用天气查询工具。\n</think>\n\n\n",
+      "content_len": 135,
+      "latency_ms": 1439,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "<think>\n用户想查询阿里、腾讯、美团三家公司今天的股价和涨跌幅。这三家公司都是上市公司：\n\n1. 阿里巴巴 (Alibaba) - 在美国纽交所上市，代码 BABA\n2. 腾讯 (Tencent) - 在香港联交所上市，代码 0700.HK\n3. 美团 (Meituan) - 在香港联交所上市，代码 3690.HK\n\n我需要调用 get_stock 函数来查询这三家公司的股票信息。\n</th",
+      "content_len": 207,
+      "latency_ms": 2977,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "<think>\n用户想要预订后天从北京到上海的高铁票，10点之后出发，二等座。我需要先查询高铁时刻表来获取相关信息。\n\n当前日期是2024-03-15，后天就是2024-03-17。\n\n我需要调用 search_train 函数来查询：\n- from_city: 北京\n- to_city: 上海\n- date: 2024-03-17\n</think>\n\n好的，我来帮您查询后天（3月17日）从北京到",
+      "content_len": 210,
+      "latency_ms": 2229,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "F1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content_head": "<think>\n用户想知道上证指数今天是多少，以及和一周前相比涨跌了多少百分比。\n\n让我分析一下：\n1. 上证指数的代码是 000001.ss\n2. 用户需要查询今天的数据和一周前的数据进行对比\n\n我需要调用股票查询工具来获取上证指数的数据。\n</think>\n\n我来帮你查询上证指数的情况。\n",
+      "content_len": 147,
+      "latency_ms": 2415,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "F2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content_head": "<think>\n用户询问比特币当前价格，以及与2026年3月1日相比的涨跌幅。我需要查询比特币当前价格，但用户提到的\"2026年3月1日\"是未来的日期（今天是2025年9月28日），所以我只能获取当前的比特币价格。\n\n让我先查询比特币当前价格。\n</think>\n\n我来帮你查询比特币的当前价格。\n",
+      "content_len": 149,
+      "latency_ms": 1890,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "S1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "<think>\n用户询问NBA昨天的比赛结果，特别是湖人的比赛情况。要回答这个问题，我需要搜索NBA昨天的比赛信息。\n\n让我搜索NBA昨天的比赛结果。\n</think>\n\n\n",
+      "content_len": 87,
+      "latency_ms": 1708,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "naked",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "<think>\n用户询问中国男足最近3场世界杯预选赛的对手和比分。我需要搜索相关的足球新闻和比赛信息来回答这个问题。\n</think>\n\n我来帮您搜索中国男足最近世界杯预选赛的相关信息。\n",
+      "content_len": 94,
+      "latency_ms": 1785,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "N1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "<think>\n用户要求获取今天国内外最大的新闻，涵盖科技、经济和国际三个领域，按影响力排序。\n\n由于我没有实时访问新闻的能力，我需要调用 web_search 工具来获取最新的新闻信息。我可以为每个领域分别搜索，或者搜索综合新闻。\n\n让我调用 web_search 工具来获取新闻。\n</think>\n\n\n",
+      "content_len": 154,
+      "latency_ms": 2910,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "N2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content_head": "<think>\nThe user is asking about:\n1. What new model DeepSeek recently released\n2. Comparison with Qwen3.6's release time and parameter scale\n\nLet me search for the latest information about DeepSeek's ",
+      "content_len": 234,
+      "latency_ms": 2178,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "<think>\n用户想了解最近好看的华语悬疑片，按豆瓣评分排序前3名。我需要搜索这方面的信息。\n</think>\n\n\n",
+      "content_len": 59,
+      "latency_ms": 1446,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "<think>\n用户想知道2026年春节档的三部电影，以及它们的豆瓣评分和导演。让我先搜索一下2026年春节档的电影信息。\n</think>\n\n\n",
+      "content_len": 73,
+      "latency_ms": 1158,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "<think>\n用户要去上海出差3天（下周一到周三），需要查询天气。我需要调用get_weather工具来查询上海的天气。\n\n用户说\"下周\"，我需要确定下周一是哪一天。今天是2025年7月20日（周日），所以下周一是2025年7月21日。\n\n让我调用天气查询工具。\n</think>\n\n\n",
+      "content_len": 144,
+      "latency_ms": 2039,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "<think>\n用户想查询北京今天、明天、后天的温度，然后判断哪一天适合穿短袖。我需要调用天气查询工具来获取北京的天气信息。\n</think>\n\n\n",
+      "content_len": 74,
+      "latency_ms": 1292,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "<think>\n用户想同时查询阿里、腾讯、美团三家公司的股票价格和涨跌幅。这些都是港股上市公司：\n- 阿里巴巴：09988.HK\n- 腾讯控股：00700.HK\n- 美团：03690.HK\n\n我需要同时调用三次 get_stock 工具来获取这三家公司的股票信息。\n</think>\n\n\n",
+      "content_len": 144,
+      "latency_ms": 1934,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "<think>\n用户想订高铁票，但这个需求我无法完成，因为我没有订票功能。我只能查询高铁时刻表信息。\n\n我应该：\n1. 告诉用户我没有订票功能\n2. 可以帮他查询后天的车次信息，10点之后出发的，提供参考\n\n后天是几号？我需要计算一下。今天是2025-10-09，后天就是2025-10-11。\n\n我可以使用 search_train 工具帮用户查询车次信息作为参考。\n</think>\n\n抱歉，我没",
+      "content_len": 265,
+      "latency_ms": 3195,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "F1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content_head": "<think>\n用户想知道上证指数的当前数据，以及和一周前的对比涨跌幅。我需要调用股票查询工具来获取上证指数的数据。\n\n上证指数的代码是 000001.SS（上海证券交易所综合股价指数）。\n</think>\n\n\n",
+      "content_len": 106,
+      "latency_ms": 1745,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "F2",
+      "tool_calls_n": 2,
+      "tool_names": [
+        "get_crypto",
+        "web_search"
+      ],
+      "content_head": "<think>\n用户想了解比特币当前价格，并与2026年3月1日的价格对比涨跌幅。我需要：\n1. 先获取比特币当前价格\n2. 搜索2026年3月1日的比特币价格（注意：今天是2025年9月25日，所以2026年3月1日是未来的日期，可能无法获取真实数据）\n\n让我先获取当前比特币价格，同时搜索一下2026年3月1日的价格。不过由于这是未来的日期，可能搜索不到。我需要说明这一点。\n</think>\n\n",
+      "content_len": 201,
+      "latency_ms": 2939,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "S1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "<think>\n用户询问NBA昨天的比赛结果，特别是湖人的比赛情况。我需要搜索相关的NBA比赛信息。\n</think>\n\n\n",
+      "content_len": 62,
+      "latency_ms": 1604,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiniMax-M2.7",
+      "condition": "v3_brain_prompt",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "<think>\n用户问的是中国男足最近3场世界杯预选赛的对手和比分，这是一个关于实时体育数据的问题。我需要调用web_search来搜索相关信息。\n</think>\n\n\n",
+      "content_len": 85,
+      "latency_ms": 1550,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "N1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5473,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "N2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 7844,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5438,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5351,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3809,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4052,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4475,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4875,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "F1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5042,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "F2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3449,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "S1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4283,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "naked",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 6920,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "N1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4766,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "N2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3505,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "E1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4562,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "E2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4809,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "L1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 5420,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "L2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 3678,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "W1",
+      "tool_calls_n": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4335,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "W2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4372,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "F1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4663,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "F2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 7673,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "S1",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 2640,
+      "error": null,
+      "score": 1
+    },
+    {
+      "provider": "MiMo-2.5-Pro",
+      "condition": "v3_brain_prompt",
+      "qid": "S2",
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 4928,
+      "error": null,
+      "score": 1
+    }
+  ]
+}
