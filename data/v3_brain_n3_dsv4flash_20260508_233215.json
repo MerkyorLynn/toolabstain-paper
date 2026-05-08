@@ -1,0 +1,899 @@
+{
+  "ts": "2026-05-08T23:32:15.709107",
+  "raw": [
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "N1",
+      "tcalls": 4,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content": "好的，我先搜索一下今天国内外各领域的重要新闻！",
+      "ms": 5082,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "N2",
+      "tcalls": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2785,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "E1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 1992,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "E2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2273,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "L1",
+      "tcalls": 2,
+      "tool_names": [
+        "web_search",
+        "get_weather"
+      ],
+      "content": "我来查一下今天的日期，顺便看看上海的天气情况。",
+      "ms": 4732,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "L2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content": "好的！我先查一下北京今天的天气情况。",
+      "ms": 3088,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "W1",
+      "tcalls": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content": "我来帮你同时查询阿里、腾讯、美团三家今天的股价信息！",
+      "ms": 4639,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "W2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "好的！我先查一下今天日期的相关信息，然后查高铁时刻表。",
+      "ms": 3974,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "F1",
+      "tcalls": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content": "",
+      "ms": 2800,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "F2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content": "",
+      "ms": 2285,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "S1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2544,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "naked",
+      "qid": "S2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2218,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "N1",
+      "tcalls": 4,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content": "好的，我来搜索今天各领域的重要新闻！",
+      "ms": 4098,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "N2",
+      "tcalls": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2621,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "E1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "好的，我来帮你查一下最近的热门华语悬疑片！",
+      "ms": 2368,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "E2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "好的，我先查一下2026年春节档有哪些电影！",
+      "ms": 2089,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "L1",
+      "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1081)>",
+      "score": null
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "L2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content": "",
+      "ms": 4045,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "W1",
+      "tcalls": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content": "好的，我来帮你查一下这三家的实时股价！",
+      "ms": 3856,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "W2",
+      "tcalls": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content": "好的，我先查一下后天（2025年3月27日）北京到上海的高铁时刻表，看看有哪些10点后出发的车次。",
+      "ms": 4961,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "F1",
+      "tcalls": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content": "",
+      "ms": 2109,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "F2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content": "我帮你查一下比特币的当前价格。",
+      "ms": 2769,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "S1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "我来查一下昨天NBA的比赛结果！",
+      "ms": 2517,
+      "score": 1
+    },
+    {
+      "trial": 0,
+      "condition": "v3_brain",
+      "qid": "S2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 1805,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "N1",
+      "tcalls": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content": "好的，我先分别搜索国际、科技、经济三个领域今天的最新大新闻。",
+      "ms": 3227,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "N2",
+      "tcalls": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2914,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "E1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2081,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "E2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2165,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "L1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "好的，我先查一下今天的日期，然后确定下周一到周三的具体日期，再查询上海的天气。",
+      "ms": 3528,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "L2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content": "好的！我先查一下北京今天的天气。",
+      "ms": 3738,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "W1",
+      "tcalls": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content": "好的！我来同时查询这三家公司的股价信息。",
+      "ms": 4316,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "W2",
+      "tcalls": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content": "好的，我先查一下后天（2025年1月21日）从北京到上海的高铁时刻表。",
+      "ms": 3527,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "F1",
+      "tcalls": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2736,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "F2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content": "好的，我先查一下当前比特币的价格。",
+      "ms": 3488,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "S1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2993,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "naked",
+      "qid": "S2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2148,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "N1",
+      "tcalls": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content": "好的，我来搜索今天的国内外热点新闻！",
+      "ms": 3206,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "N2",
+      "tcalls": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content": "好的，我先查一下 DeepSeek 最近发布的新模型和 Qwen3.6 的信息。",
+      "ms": 2965,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "E1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2109,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "E2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "好的，我先搜一下2026年春节档有哪些电影。",
+      "ms": 3514,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "L1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "好的！我先查一下下周上海周一到周三的天气情况。",
+      "ms": 4083,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "L2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content": "好的，我来查一下北京这几天的天气情况！",
+      "ms": 3154,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "W1",
+      "tcalls": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content": "好的，我来同时查这三家的股价！",
+      "ms": 3543,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "W2",
+      "tcalls": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content": "好的，我先查一下后天从北京到上海的高铁时刻表！",
+      "ms": 3683,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "F1",
+      "tcalls": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content": "好的，我来查一下上证指数的当前价格和一周前的数据！",
+      "ms": 2755,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "F2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content": "",
+      "ms": 2903,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "S1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "我查一下昨天的NBA赛果！",
+      "ms": 1977,
+      "score": 1
+    },
+    {
+      "trial": 1,
+      "condition": "v3_brain",
+      "qid": "S2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 1894,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "N1",
+      "tcalls": 4,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content": "好的，我先搜索今天各领域的重大新闻！",
+      "ms": 3790,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "N2",
+      "tcalls": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2751,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "E1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2064,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "E2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 1996,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "L1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 3758,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "L2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content": "",
+      "ms": 3186,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "W1",
+      "tcalls": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content": "好的，我来同时查询这三家公司的股价数据！",
+      "ms": 3812,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "W2",
+      "tcalls": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content": "好的！我先查一下北京到上海的高铁信息。",
+      "ms": 4647,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "F1",
+      "tcalls": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content": "",
+      "ms": 1838,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "F2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content": "",
+      "ms": 2629,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "S1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 1982,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "naked",
+      "qid": "S2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 1930,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "N1",
+      "tcalls": 3,
+      "tool_names": [
+        "web_search",
+        "web_search",
+        "web_search"
+      ],
+      "content": "好的，我来搜索今天的新闻热点！",
+      "ms": 3185,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "N2",
+      "tcalls": 2,
+      "tool_names": [
+        "web_search",
+        "web_search"
+      ],
+      "content": "好的，我来查一下 DeepSeek 最新发布的模型以及 Qwen3.6 的信息。",
+      "ms": 2927,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "E1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 2324,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "E2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 1873,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "L1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "好的！我先查一下下周上海周一到周三的天气情况。",
+      "ms": 3488,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "L2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_weather"
+      ],
+      "content": "好的，我来查一下北京这三天的天气情况！",
+      "ms": 2667,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "W1",
+      "tcalls": 3,
+      "tool_names": [
+        "get_stock",
+        "get_stock",
+        "get_stock"
+      ],
+      "content": "好的，我来查这三家公司的股价情况！",
+      "ms": 3941,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "W2",
+      "tcalls": 1,
+      "tool_names": [
+        "search_train"
+      ],
+      "content": "好的，我先查一下后天从北京到上海的高铁时刻表，看看有哪些10点后出发的车次。",
+      "ms": 5633,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "F1",
+      "tcalls": 1,
+      "tool_names": [
+        "get_stock"
+      ],
+      "content": "好的，我来帮你查一下上证指数今天的数据，同时也要查一下一周前的情况。",
+      "ms": 2358,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "F2",
+      "tcalls": 1,
+      "tool_names": [
+        "get_crypto"
+      ],
+      "content": "",
+      "ms": 2633,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "S1",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "我来查一下昨天（7月14日）的NBA比赛情况。",
+      "ms": 2358,
+      "score": 1
+    },
+    {
+      "trial": 2,
+      "condition": "v3_brain",
+      "qid": "S2",
+      "tcalls": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content": "",
+      "ms": 1982,
+      "score": 1
+    }
+  ]
+}

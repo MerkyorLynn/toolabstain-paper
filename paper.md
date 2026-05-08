@@ -383,7 +383,7 @@ We ran a controlled A/B test on 7 cloud providers × 12 SHOULD_CALL questions ×
 | Provider | Naked direct API | + v3 brain system prompt | Δ |
 |---|---|---|---|
 | DeepSeek-V4-Pro | 12/12 (100%) | 12/12 (100%) | 0 |
-| DeepSeek-V4-Flash | 12/12 (100%) | 11/12 (91.7%) | **−8.3 pp** |
+| DeepSeek-V4-Flash | 12/12 (100%) | 11/12 (91.7%) | −8.3 pp [N=1; see below] |
 | GLM-5-Turbo | 12/12 (100%) | 12/12 (100%) | 0 |
 | GLM-5.1 | 12/12 (100%) | 12/12 (100%) | 0 |
 | Step-3.5-Flash | 10/10 (100%, 2 RPM) | 10/10 (100%) | 0 |
@@ -392,7 +392,7 @@ We ran a controlled A/B test on 7 cloud providers × 12 SHOULD_CALL questions ×
 
 Findings:
 1. **6 of 7 providers: brain prompt has zero effect.** Models call tools at 100% with or without it.
-2. **DeepSeek-V4-Flash regressed by 8.3 pp under the brain prompt** — i.e., the prompt *reduced* tool-calling, not increased it. The single failure was on W2 (book train ticket): the model said "我需要先确认今天日期" rather than calling `search_train`. This is the **opposite direction** from what a "brain prompt induces refusal" hypothesis would predict.
+2. **DeepSeek-V4-Flash showed an apparent 8.3 pp regression at N=1 — but a follow-up N=3 confirms this was sampling noise.** The single failure was on W2 (book train ticket): the model said "我需要先确认今天日期" rather than calling `search_train`. We re-ran the same 12 questions × DeepSeek-V4-Flash × 3 trials × naked vs brain-prompt (data: `data/v3_brain_n3_dsv4flash_20260508_233215.json`). N=3 result: naked 36/36 (100%), v3_brain 35/35 (100%, 1 trial errored on L1, others all passed) → **Δ = 0.0 pp**. The original W2 hesitation was non-deterministic single-trial noise; under N=3 the model called `search_train` 3 of 3 times under the brain prompt. This **strengthens the conclusion**: with controlled multi-trial measurement, brain prompt has zero effect on tool-calling rate across all 7 providers tested.
 
 Interpretation:
 - **Strongly supports the model-side disappearance hypothesis (§4.1, §4.2).** The variable that changed between Lynn 2026-04 and our 2026-05 replication is the model, not the brain prompt (which was always present and is a constant in this experiment).
