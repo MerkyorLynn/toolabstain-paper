@@ -1,0 +1,41 @@
+running 9 providers × 3 q × 4 conds × 2 trials = 216 calls
+[start] DeepSeek-V4-Pro
+[start] DeepSeek-V4-Flash
+[start] GLM-5-Turbo
+[start] Step-3.5-Flash
+[start] MiniMax-M2.7
+[start] GLM-5.1
+[start] MiMo-2.5-Pro
+[start] HY3-Preview
+[start] Kimi-K2.5-AlayaNew
+[done]  MiniMax-M2.7 (24 rows)
+[done]  DeepSeek-V4-Flash (24 rows)
+[done]  Step-3.5-Flash (24 rows)
+[done]  MiMo-2.5-Pro (24 rows)
+[done]  HY3-Preview (24 rows)
+[done]  DeepSeek-V4-Pro (24 rows)
+[done]  GLM-5.1 (24 rows)
+[done]  GLM-5-Turbo (24 rows)
+[done]  Kimi-K2.5-AlayaNew (24 rows)
+
+========== Mitigation Effect Table (mean score, trials=2) ==========
+qid   kind       |  M0_baseline  |   M1_chain   |M2_parametric | M3_combined  
+--------------------------------------------------------------------------------
+A4    SHOULD     |  0.61 (n=18)  | 0.94 (n=18)  | 0.64 (n=18)  | 0.97 (n=18)  
+A6    SHOULD     |  0.50 (n=18)  | 0.47 (n=18)  | 0.56 (n=18)  | 0.61 (n=18)  
+E2    SHOULDNT   |  0.00 (n=18)  | 0.00 (n=18)  | 0.67 (n=18)  | 0.61 (n=18)  
+
+========== Per-provider net delta (M1/M2/M3 vs M0_baseline) ==========
+Provider               | M0_base  | M1_chain   | M2_param   | M3_comb   
+------------------------------------------------------------------------------------------
+DeepSeek-V4-Pro        | 2.0      | 4.0 (+2.0) | 0.0 (-2.0) | 0.0 (-2.0)
+DeepSeek-V4-Flash      | 2.5      | 2.0 (-0.5) | 0.0 (-2.5) | 0.0 (-2.5)
+GLM-5-Turbo            | 2.0      | 3.0 (+1.0) | 0.0 (-2.0) | 0.0 (-2.0)
+GLM-5.1                | 2.0      | 2.5 (+0.5) | 0.0 (-2.0) | 0.0 (-2.0)
+Step-3.5-Flash         | 1.5      | 3.5 (+2.0) | 0.0 (-1.5) | 0.0 (-1.5)
+MiniMax-M2.7           | 2.5      | 3.0 (+0.5) | 0.0 (-2.5) | 0.0 (-2.5)
+Kimi-K2.5-AlayaNew     | 2.5      | 2.5 (=0.0) | 0.0 (-2.5) | 0.0 (-2.5)
+MiMo-2.5-Pro           | 2.0      | 3.0 (+1.0) | 0.0 (-2.0) | 0.0 (-2.0)
+HY3-Preview            | 3.0      | 2.0 (-1.0) | 0.0 (-3.0) | 0.0 (-3.0)
+
+💾 saved → /Users/lynn/Downloads/Lynn/tests/benchmarks/toolabstain-spike/mitigation_20260508_150835.json

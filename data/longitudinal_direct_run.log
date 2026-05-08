@@ -1,0 +1,53 @@
+running 13 versions × 31 q × 1 trials = 403 calls
+[start] GLM-4.5
+[start] GLM-4.6
+[start] GLM-4.7
+[start] GLM-5
+[done]  GLM-4.5 (31 rows)
+[start] GLM-5-Turbo
+[done]  GLM-5 (31 rows)
+[start] GLM-5.1
+[done]  GLM-4.7 (31 rows)
+[start] MiniMax-M2
+[done]  GLM-4.6 (31 rows)
+[start] MiniMax-M2.1
+[done]  MiniMax-M2 (31 rows)
+[start] MiniMax-M2.5
+[done]  GLM-5.1 (31 rows)
+[start] MiniMax-M2.7
+[done]  GLM-5-Turbo (31 rows)
+[start] step-3
+[done]  MiniMax-M2.1 (31 rows)
+[start] step-3.5-flash
+[done]  MiniMax-M2.5 (31 rows)
+[start] step-3.5-flash-2603
+[done]  MiniMax-M2.7 (31 rows)
+[done]  step-3.5-flash (31 rows)
+[done]  step-3.5-flash-2603 (31 rows)
+[done]  step-3 (31 rows)
+
+========== Direct-API Longitudinal · GLM / MiniMax / Step ==========
+
+## GLM
+Version                      Released   |   A/8   |  B/6   |  C/4   |  D/1   |  E/8   |  F/4   |  tot/31  |err
+GLM-4.5                      2025-09    |  7.0/8  | 6.0/6  | 3.0/4  | 1.0/1  | 5.0/8  | 3.0/4  |25.0/31   | 0
+GLM-4.6                      2025-10    |  8.0/8  | 5.0/6  | 4.0/4  | 1.0/1  | 5.0/8  | 3.0/4  |26.0/31   | 1
+GLM-4.7                      2025-12    |  7.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 4.0/8  | 4.0/4  |26.0/31   | 1
+GLM-5                        2026-02    |  7.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 5.0/8  | 4.0/4  |27.0/31   | 0
+GLM-5-Turbo                  2026-04    |  7.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 5.0/8  | 4.0/4  |27.0/31   | 0
+GLM-5.1                      2026-04    |  8.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 5.0/8  | 4.0/4  |28.0/31   | 0
+
+## MiniMax
+Version                      Released   |   A/8   |  B/6   |  C/4   |  D/1   |  E/8   |  F/4   |  tot/31  |err
+MiniMax-M2                   2025-10    |  7.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 5.0/8  | 4.0/4  |27.0/31   | 0
+MiniMax-M2.1                 2025-12    |  8.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 5.0/8  | 4.0/4  |28.0/31   | 0
+MiniMax-M2.5                 2026-02    |  7.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 5.0/8  | 4.0/4  |27.0/31   | 0
+MiniMax-M2.7                 2026-04    |  7.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 5.0/8  | 4.0/4  |27.0/31   | 0
+
+## Step
+Version                      Released   |   A/8   |  B/6   |  C/4   |  D/1   |  E/8   |  F/4   |  tot/31  |err
+step-3                       2025-Q3    |  2.0/8  | 6.0/6  | 0.0/4  | 1.0/1  | 1.0/8  | 3.0/4  |13.0/31   | 1
+step-3.5-flash               2026-04    |  6.0/8  | 3.0/6  | 3.0/4  | 0.0/1  | 4.0/8  | 4.0/4  |20.0/31   | 9
+step-3.5-flash-2603          2026-03    |  7.5/8  | 6.0/6  | 1.0/4  | 0.0/1  | 4.0/8  | 4.0/4  |22.5/31   | 6
+
+💾 saved → /Users/lynn/Downloads/Lynn/tests/benchmarks/toolabstain-spike/longitudinal_direct_20260508_151618.json

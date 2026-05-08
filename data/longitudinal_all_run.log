@@ -1,0 +1,119 @@
+running 28 versions × 31 q × 1 trials = 868 calls
+[start] DS-V3.1-terminus (deepseek/deepseek-v3.1-terminus)
+[start] DS-V3.2-exp (deepseek/deepseek-v3.2-exp)
+[start] DS-V3.2 (deepseek/deepseek-v3.2)
+[start] DS-V4-Flash (deepseek/deepseek-v4-flash)
+[start] DS-V4-Pro (deepseek/deepseek-v4-pro)
+[start] Qwen3-Max (qwen/qwen3-max)
+[done]  DS-V3.1-terminus (31 rows)
+[start] Qwen3.5-Plus-02-15 (qwen/qwen3.5-plus-02-15)
+[done]  Qwen3-Max (31 rows)
+[start] Qwen3.5-35B-A3B (qwen/qwen3.5-35b-a3b)
+[done]  DS-V3.2-exp (31 rows)
+[start] Qwen3.6-27B (qwen/qwen3.6-27b)
+[done]  DS-V4-Pro (31 rows)
+[start] Qwen3.6-35B-A3B(OR) (qwen/qwen3.6-35b-a3b)
+[done]  DS-V3.2 (31 rows)
+[start] Qwen3.6-35B-A3B-FP8(Spark) (Qwen3.6-35B-A3B-FP8)
+[done]  Qwen3.5-Plus-02-15 (31 rows)
+[start] GLM-4.6 (z-ai/glm-4.6)
+[done]  Qwen3.5-35B-A3B (31 rows)
+[start] GLM-4.7 (z-ai/glm-4.7)
+[done]  DS-V4-Flash (31 rows)
+[start] GLM-5 (z-ai/glm-5)
+[done]  Qwen3.6-27B (31 rows)
+[start] GLM-5-Turbo (z-ai/glm-5-turbo)
+[done]  Qwen3.6-35B-A3B(OR) (31 rows)
+[start] GLM-5.1 (z-ai/glm-5.1)
+[done]  GLM-4.6 (31 rows)
+[start] MiniMax-M2 (minimax/minimax-m2)
+[done]  GLM-4.7 (31 rows)
+[start] MiniMax-M2.1 (minimax/minimax-m2.1)
+[done]  GLM-5 (31 rows)
+[start] MiniMax-M2.5 (minimax/minimax-m2.5)
+[done]  GLM-5.1 (31 rows)
+[start] MiniMax-M2.7 (minimax/minimax-m2.7)
+[done]  GLM-5-Turbo (31 rows)
+[start] Kimi-K2-thinking (moonshotai/kimi-k2-thinking)
+[done]  Qwen3.6-35B-A3B-FP8(Spark) (31 rows)
+[start] Kimi-K2.5 (moonshotai/kimi-k2.5)
+[done]  MiniMax-M2 (31 rows)
+[start] Kimi-K2.6 (moonshotai/kimi-k2.6)
+[done]  MiniMax-M2.1 (31 rows)
+[start] Kimi-latest (moonshotai/kimi-latest)
+[done]  MiniMax-M2.5 (31 rows)
+[start] MiMo-v2-flash (xiaomi/mimo-v2-flash)
+[done]  MiniMax-M2.7 (31 rows)
+[start] MiMo-v2-pro (xiaomi/mimo-v2-pro)
+[done]  Kimi-K2-thinking (31 rows)
+[start] MiMo-v2.5 (xiaomi/mimo-v2.5)
+[done]  Kimi-K2.5 (31 rows)
+[start] MiMo-v2.5-pro (xiaomi/mimo-v2.5-pro)
+[done]  Kimi-K2.6 (31 rows)
+[done]  Kimi-latest (31 rows)
+[done]  MiMo-v2-flash (31 rows)
+[done]  MiMo-v2-pro (31 rows)
+[done]  MiMo-v2.5 (31 rows)
+[done]  MiMo-v2.5-pro (31 rows)
+
+========== ToolAbstain Longitudinal · all families ==========
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+## DeepSeek
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Version                          Released   |   A/8   |  B/6   |  C/4   |  D/1   |  E/8   |  F/4   |  tot/31  |err
+DS-V3.1-terminus                 2025-09    |  5.0/8  | 6.0/6  | 3.0/4  | 1.0/1  | 1.0/8  | 2.0/4  |18.0/31   | 0
+DS-V3.2-exp                      2025-10    |  5.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 0.0/8  | 0.0/4  |16.0/31   | 11
+DS-V3.2                          2025-12    |  5.0/8  | 6.0/6  | 3.0/4  | 1.0/1  | 1.0/8  | 0.0/4  |16.0/31   | 10
+DS-V4-Flash                      2026-04    |  7.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 1.0/8  | 0.0/4  |19.0/31   | 10
+DS-V4-Pro                        2026-04    |  7.0/8  | 6.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  |13.0/31   | 17
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+## GLM
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Version                          Released   |   A/8   |  B/6   |  C/4   |  D/1   |  E/8   |  F/4   |  tot/31  |err
+GLM-4.6                          2025-10    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+GLM-4.7                          2025-12    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+GLM-5                            2026-02    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+GLM-5-Turbo                      2026-04    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+GLM-5.1                          2026-04    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+## Kimi
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Version                          Released   |   A/8   |  B/6   |  C/4   |  D/1   |  E/8   |  F/4   |  tot/31  |err
+Kimi-K2-thinking                 2025-11    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+Kimi-K2.5                        2026-01    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+Kimi-K2.6                        2026-04    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+Kimi-latest                      2026-04    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+## MiMo
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Version                          Released   |   A/8   |  B/6   |  C/4   |  D/1   |  E/8   |  F/4   |  tot/31  |err
+MiMo-v2-flash                    2025-12    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+MiMo-v2-pro                      2026-01    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+MiMo-v2.5                        2026-04    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+MiMo-v2.5-pro                    2026-04    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+## MiniMax
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Version                          Released   |   A/8   |  B/6   |  C/4   |  D/1   |  E/8   |  F/4   |  tot/31  |err
+MiniMax-M2                       2025-10    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+MiniMax-M2.1                     2025-12    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+MiniMax-M2.5                     2026-02    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+MiniMax-M2.7                     2026-04    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+## Qwen
+────────────────────────────────────────────────────────────────────────────────────────────────────
+Version                          Released   |   A/8   |  B/6   |  C/4   |  D/1   |  E/8   |  F/4   |  tot/31  |err
+Qwen3-Max                        2025-09    |  8.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 4.0/8  | 3.0/4  |26.0/31   | 0
+Qwen3.5-Plus-02-15               2025-12    |  6.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 6.0/31   | 25
+Qwen3.5-35B-A3B                  2026-02    |  4.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 4.0/31   | 27
+Qwen3.6-27B                      2026-04    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+Qwen3.6-35B-A3B(OR)              2026-04    |  0.0/8  | 0.0/6  | 0.0/4  | 0.0/1  | 0.0/8  | 0.0/4  | 0.0/31   | 31
+Qwen3.6-35B-A3B-FP8(Spark)       2026-04    |  8.0/8  | 6.0/6  | 4.0/4  | 1.0/1  | 6.0/8  | 4.0/4  |29.0/31   | 0
+
+💾 saved → /Users/lynn/Downloads/Lynn/tests/benchmarks/toolabstain-spike/longitudinal_all_20260508_150255.json
