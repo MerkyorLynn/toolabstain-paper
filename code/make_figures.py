@@ -101,10 +101,12 @@ DATE_TO_NUM = {
 
 # ────────────────────────────────────────────────────────────────────────
 def load_all_versions():
-    """Aggregate per-version score from longitudinal files."""
+    """Aggregate per-version score from longitudinal + supplementary files."""
     versions = []  # list of dicts: {family, name, released, total, max, by_cat, errors}
 
-    for jf in sorted(DATA.glob("longitudinal_*.json")):
+    # Read both longitudinal_*.json (OR routes) and v1_*.json (direct-API supplementary)
+    sources = sorted(DATA.glob("longitudinal_*.json")) + sorted(DATA.glob("v1_*.json"))
+    for jf in sources:
         d = json.loads(jf.read_text())
         if not d.get("raw_rows"):
             continue

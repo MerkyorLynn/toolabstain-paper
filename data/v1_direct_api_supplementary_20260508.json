@@ -1,0 +1,83 @@
+{
+  "benchmark": "ToolAbstain v1 · DeepSeek direct-API supplementary (recovered from earlier run 2026-05-08 14:24 before DS API 503 outage at 17:17)",
+  "ts": "2026-05-08T14:24:39",
+  "note": "DeepSeek direct API (api.deepseek.com) was healthy at this morning's run. By afternoon 17:17 PT it was returning HTTP 503 'Service is too busy' (28 errors on V4-Flash) and TimeoutError (27 errors on V4-Pro). This file preserves the morning's clean per-category aggregate so DS-V4-Pro/V4-Flash appear in Fig 2 leaderboard at their true scores. Multi-turn questions (A4mt/A6mt/A9mt/C2mt/C7mt/C8mt = 6 errors per provider) are excluded due to DeepSeek's known multi-turn API contract incompatibility documented in §4.6 of the paper.",
+  "providers": ["DeepSeek-V4-Pro", "DeepSeek-V4-Flash"],
+  "n_questions_attempted": 25,
+  "n_multi_turn_excluded": 6,
+  "raw_rows": [
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "A2", "cat": "A", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "A3", "cat": "A", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "A4mt", "cat": "A", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "A5", "cat": "A", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "A6mt", "cat": "A", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "A7", "cat": "A", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "A8", "cat": "A", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "A9mt", "cat": "A", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "B5", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "B7", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "B8", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "B9", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "B10", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "B11", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "C1", "cat": "C", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "C2mt", "cat": "C", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "C7mt", "cat": "C", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "C8mt", "cat": "C", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "D5", "cat": "D", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "E2", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 0, "reason": "overcalled"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "E5", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 0, "reason": "overcalled"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "E7", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "E8", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "E9", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "E10", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "E11", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "E12", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 0, "reason": "overcalled"}},
+
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "F1", "cat": "F", "kind": "BORDER", "trial": 0, "scoring": {"score": 1, "reason": "ok_with_titles_or_tool"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "F2", "cat": "F", "kind": "BORDER", "trial": 0, "scoring": {"score": 1, "reason": "ok"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "F3", "cat": "F", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Pro", "provider": "DS-V4-Pro", "model": "deepseek-v4-pro", "family": "DeepSeek", "released": "2026-04", "qid": "F4", "cat": "F", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "A2", "cat": "A", "kind": "SHOULD", "trial": 0, "scoring": {"score": 0, "reason": "wrong_tool"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "A3", "cat": "A", "kind": "SHOULD", "trial": 0, "scoring": {"score": 0, "reason": "wrong_tool"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "A4mt", "cat": "A", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "A5", "cat": "A", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "A6mt", "cat": "A", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "A7", "cat": "A", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "A8", "cat": "A", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "A9mt", "cat": "A", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "B5", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "B7", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "B8", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "B9", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "B10", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "B11", "cat": "B", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "C1", "cat": "C", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "C2mt", "cat": "C", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "C7mt", "cat": "C", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "C8mt", "cat": "C", "kind": "SHOULD", "trial": 0, "error": "DS API multi-turn contract bug", "scoring": {"score": null}},
+
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "D5", "cat": "D", "kind": "SHOULD", "trial": 0, "scoring": {"score": 1, "reason": "called_expected"}},
+
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "E2", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 0, "reason": "overcalled"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "E5", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 0, "reason": "overcalled"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "E7", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "E8", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "E9", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "E10", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "E11", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "E12", "cat": "E", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 0, "reason": "overcalled"}},
+
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "F1", "cat": "F", "kind": "BORDER", "trial": 0, "scoring": {"score": 1, "reason": "ok_with_titles_or_tool"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "F2", "cat": "F", "kind": "BORDER", "trial": 0, "scoring": {"score": 1, "reason": "ok"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "F3", "cat": "F", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}},
+    {"version": "DS-V4-Flash", "provider": "DS-V4-Flash", "model": "deepseek-v4-flash", "family": "DeepSeek", "released": "2026-04", "qid": "F4", "cat": "F", "kind": "SHOULDNT", "trial": 0, "scoring": {"score": 1, "reason": "abstained"}}
+  ]
+}

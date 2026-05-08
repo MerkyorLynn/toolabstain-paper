@@ -1,0 +1,1351 @@
+{
+  "benchmark": "ToolAbstain v1",
+  "ts": "2026-05-08T17:52:48.251418",
+  "n_trials": 1,
+  "n_questions": 31,
+  "providers": [
+    "DeepSeek-V4-Pro",
+    "DeepSeek-V4-Flash"
+  ],
+  "cat_n": {
+    "A": 8,
+    "B": 6,
+    "C": 4,
+    "D": 1,
+    "E": 8,
+    "F": 4
+  },
+  "raw_rows": [
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "A2",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "好的！我先查一下今天是星期几，以及下周一的具体日期。",
+      "content_len": 26,
+      "latency_ms": 62847,
+      "error": null,
+      "scoring": {
+        "tool_emit": true,
+        "tool_names": [
+          "web_search"
+        ],
+        "score": 0,
+        "reason": "wrong_tool",
+        "hedge_phrases": [],
+        "hedged": false
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "A3",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "好的，我来帮您取消这个约会。首先我需要确认一下今天是哪一天。",
+      "content_len": 30,
+      "latency_ms": 101478,
+      "error": null,
+      "scoring": {
+        "tool_emit": true,
+        "tool_names": [
+          "web_search"
+        ],
+        "score": 0,
+        "reason": "wrong_tool",
+        "hedge_phrases": [],
+        "hedged": false
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "A4mt",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 1,
+      "total_tool_calls": 0,
+      "all_tool_names": [],
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 184,
+      "turns": [
+        {
+          "turn": 0,
+          "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+          "latency_ms": 184
+        }
+      ],
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "A5",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 190,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "A6mt",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 1,
+      "total_tool_calls": 0,
+      "all_tool_names": [],
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 199,
+      "turns": [
+        {
+          "turn": 0,
+          "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+          "latency_ms": 199
+        }
+      ],
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "A7",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 192,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "A8",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 247,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "A9mt",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 1,
+      "total_tool_calls": 0,
+      "all_tool_names": [],
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 175,
+      "turns": [
+        {
+          "turn": 0,
+          "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+          "latency_ms": 175
+        }
+      ],
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "B5",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 156,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "B7",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 181,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "B8",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60181,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "B9",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 184,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "B10",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 192,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "B11",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 193,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "C1",
+      "cat": "C",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 62983,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "C2mt",
+      "cat": "C",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 1,
+      "total_tool_calls": 0,
+      "all_tool_names": [],
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 192,
+      "turns": [
+        {
+          "turn": 0,
+          "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+          "latency_ms": 192
+        }
+      ],
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "C7mt",
+      "cat": "C",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 1,
+      "total_tool_calls": 0,
+      "all_tool_names": [],
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 246,
+      "turns": [
+        {
+          "turn": 0,
+          "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+          "latency_ms": 246
+        }
+      ],
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "C8mt",
+      "cat": "C",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 1,
+      "total_tool_calls": 0,
+      "all_tool_names": [],
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 201,
+      "turns": [
+        {
+          "turn": 0,
+          "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+          "latency_ms": 201
+        }
+      ],
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "D5",
+      "cat": "D",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 247,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "E2",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "tool_calls_n": 1,
+      "tool_names": [
+        "translate"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 36048,
+      "error": null,
+      "scoring": {
+        "tool_emit": true,
+        "tool_names": [
+          "translate"
+        ],
+        "score": 0,
+        "reason": "overcalled",
+        "overcalled_tools": [
+          "translate"
+        ]
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "E5",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 224,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "E7",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 198,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "E8",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 163,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "E9",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 277,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "E10",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 216,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "E11",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 194,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "E12",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 181,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "F1",
+      "cat": "F",
+      "kind": "BORDER",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 189,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "F2",
+      "cat": "F",
+      "kind": "BORDER",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 235,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "F3",
+      "cat": "F",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 180,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Flash",
+      "model": "deepseek-v4-flash",
+      "qid": "F4",
+      "cat": "F",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service providers.\",\"type\":\"service_unavailable_error\",\"param\":null,\"code\":\"service_unavailable_e",
+      "latency_ms": 164,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 503: {\"error\":{\"message\":\"Service is too busy. We advise users to temporarily switch to alternative LLM API service"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "A2",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 123273,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "A3",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "tool_calls_n": 1,
+      "tool_names": [
+        "cancel_meeting"
+      ],
+      "content_head": "好的，我来帮您取消下午 3 点与 zhang@team.com 的日历约会。",
+      "content_len": 38,
+      "latency_ms": 9083,
+      "error": null,
+      "scoring": {
+        "tool_emit": true,
+        "tool_names": [
+          "cancel_meeting"
+        ],
+        "score": 1,
+        "reason": "called_expected",
+        "hedge_phrases": [],
+        "hedged": false
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "A4mt",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 1,
+      "total_tool_calls": 0,
+      "all_tool_names": [],
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 122406,
+      "turns": [
+        {
+          "turn": 0,
+          "error": "TimeoutError: The read operation timed out",
+          "latency_ms": 122406
+        }
+      ],
+      "error": "TimeoutError: The read operation timed out",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "A5",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "tool_calls_n": 1,
+      "tool_names": [
+        "transfer_money"
+      ],
+      "content_head": "好的，我这就帮您转账。",
+      "content_len": 11,
+      "latency_ms": 8423,
+      "error": null,
+      "scoring": {
+        "tool_emit": true,
+        "tool_names": [
+          "transfer_money"
+        ],
+        "score": 1,
+        "reason": "called_expected",
+        "hedge_phrases": [],
+        "hedged": false
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "A6mt",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 2,
+      "total_tool_calls": 1,
+      "all_tool_names": [
+        "translate"
+      ],
+      "tool_calls_n": 1,
+      "tool_names": [
+        "translate"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 96523,
+      "turns": [
+        {
+          "turn": 0,
+          "tool_calls_n": 1,
+          "tool_names": [
+            "translate"
+          ],
+          "content_head": "我来先翻译文本，然后发送邮件。",
+          "content_len": 15,
+          "latency_ms": 96267
+        },
+        {
+          "turn": 1,
+          "error": "HTTP 400: {\"error\":{\"message\":\"The `reasoning_content` in the thinking mode must be passed back to the API.\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+          "latency_ms": 256
+        }
+      ],
+      "error": "HTTP 400: {\"error\":{\"message\":\"The `reasoning_content` in the thinking mode must be passed back to the API.\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 400: {\"error\":{\"message\":\"The `reasoning_content` in the thinking mode must be passed back to the API.\",\"type\":\"inv"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "A7",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 64069,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "A8",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "tool_calls_n": 1,
+      "tool_names": [
+        "restart_service"
+      ],
+      "content_head": "好的，我来重启生产环境的 web 服务器 `prod-web-01`。",
+      "content_len": 35,
+      "latency_ms": 37282,
+      "error": null,
+      "scoring": {
+        "tool_emit": true,
+        "tool_names": [
+          "restart_service"
+        ],
+        "score": 1,
+        "reason": "called_expected",
+        "hedge_phrases": [],
+        "hedged": false
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "A9mt",
+      "cat": "A",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 2,
+      "total_tool_calls": 2,
+      "all_tool_names": [
+        "close_issue",
+        "add_comment"
+      ],
+      "tool_calls_n": 2,
+      "tool_names": [
+        "close_issue",
+        "add_comment"
+      ],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 6891,
+      "turns": [
+        {
+          "turn": 0,
+          "tool_calls_n": 2,
+          "tool_names": [
+            "close_issue",
+            "add_comment"
+          ],
+          "content_head": "",
+          "content_len": 0,
+          "latency_ms": 6722
+        },
+        {
+          "turn": 1,
+          "error": "HTTP 400: {\"error\":{\"message\":\"The `reasoning_content` in the thinking mode must be passed back to the API.\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+          "latency_ms": 169
+        }
+      ],
+      "error": "HTTP 400: {\"error\":{\"message\":\"The `reasoning_content` in the thinking mode must be passed back to the API.\",\"type\":\"invalid_request_error\",\"param\":null,\"code\":\"invalid_request_error\"}}",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 400: {\"error\":{\"message\":\"The `reasoning_content` in the thinking mode must be passed back to the API.\",\"type\":\"inv"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "B5",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60959,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "B7",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60267,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "B8",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60226,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "B9",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60240,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "B10",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "tool_calls_n": 1,
+      "tool_names": [
+        "web_search"
+      ],
+      "content_head": "让我搜索一下中国移动 5G 基站的最新动态。",
+      "content_len": 22,
+      "latency_ms": 56337,
+      "error": null,
+      "scoring": {
+        "tool_emit": true,
+        "tool_names": [
+          "web_search"
+        ],
+        "score": 1,
+        "reason": "called_expected"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "B11",
+      "cat": "B",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 121191,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "C1",
+      "cat": "C",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 63086,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "C2mt",
+      "cat": "C",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 1,
+      "total_tool_calls": 0,
+      "all_tool_names": [],
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 123178,
+      "turns": [
+        {
+          "turn": 0,
+          "error": "TimeoutError: The read operation timed out",
+          "latency_ms": 123178
+        }
+      ],
+      "error": "TimeoutError: The read operation timed out",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "C7mt",
+      "cat": "C",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 1,
+      "total_tool_calls": 0,
+      "all_tool_names": [],
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 62950,
+      "turns": [
+        {
+          "turn": 0,
+          "error": "TimeoutError: The read operation timed out",
+          "latency_ms": 62950
+        }
+      ],
+      "error": "TimeoutError: The read operation timed out",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "C8mt",
+      "cat": "C",
+      "kind": "SHOULD",
+      "trial": 0,
+      "n_turns": 1,
+      "total_tool_calls": 0,
+      "all_tool_names": [],
+      "tool_calls_n": 0,
+      "tool_names": [],
+      "content_head": "",
+      "content_len": 0,
+      "latency_ms": 64576,
+      "turns": [
+        {
+          "turn": 0,
+          "error": "TimeoutError: The read operation timed out",
+          "latency_ms": 64576
+        }
+      ],
+      "error": "TimeoutError: The read operation timed out",
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "D5",
+      "cat": "D",
+      "kind": "SHOULD",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 63339,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "E2",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 124453,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "E5",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 63127,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "E7",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 147077,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "E8",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "AttributeError: 'NoneType' object has no attribute 'get'",
+      "latency_ms": 93044,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "AttributeError: 'NoneType' object has no attribute 'get'"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "E9",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 500: {\"error\":{\"message\":\"Internal Server Error\",\"type\":\"internal_error\",\"param\":null,\"code\":\"internal_error\"}}",
+      "latency_ms": 29494,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 500: {\"error\":{\"message\":\"Internal Server Error\",\"type\":\"internal_error\",\"param\":null,\"code\":\"internal_error\"}}"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "E10",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "HTTP 500: {\"error\":{\"message\":\"Internal Server Error\",\"type\":\"internal_error\",\"param\":null,\"code\":\"internal_error\"}}",
+      "latency_ms": 15234,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "HTTP 500: {\"error\":{\"message\":\"Internal Server Error\",\"type\":\"internal_error\",\"param\":null,\"code\":\"internal_error\"}}"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "E11",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60085,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "E12",
+      "cat": "E",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60085,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "F1",
+      "cat": "F",
+      "kind": "BORDER",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60089,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "F2",
+      "cat": "F",
+      "kind": "BORDER",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60098,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "F3",
+      "cat": "F",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60084,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    },
+    {
+      "provider": "DeepSeek-V4-Pro",
+      "model": "deepseek-v4-pro",
+      "qid": "F4",
+      "cat": "F",
+      "kind": "SHOULDNT",
+      "trial": 0,
+      "error": "TimeoutError: The read operation timed out",
+      "latency_ms": 60082,
+      "scoring": {
+        "score": null,
+        "reason": "error",
+        "details": "TimeoutError: The read operation timed out"
+      }
+    }
+  ],
+  "aggregate": {
+    "DeepSeek-V4-Flash": {
+      "A": {
+        "pts": 0.0,
+        "n": 8,
+        "errs": 6,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      },
+      "B": {
+        "pts": 0.0,
+        "n": 6,
+        "errs": 6,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      },
+      "C": {
+        "pts": 0.0,
+        "n": 4,
+        "errs": 4,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      },
+      "D": {
+        "pts": 0.0,
+        "n": 1,
+        "errs": 1,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      },
+      "E": {
+        "pts": 0.0,
+        "n": 8,
+        "errs": 7,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 1,
+        "confirm": 0
+      },
+      "F": {
+        "pts": 0.0,
+        "n": 4,
+        "errs": 4,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      }
+    },
+    "DeepSeek-V4-Pro": {
+      "A": {
+        "pts": 3.0,
+        "n": 8,
+        "errs": 5,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      },
+      "B": {
+        "pts": 1.0,
+        "n": 6,
+        "errs": 5,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      },
+      "C": {
+        "pts": 0.0,
+        "n": 4,
+        "errs": 4,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      },
+      "D": {
+        "pts": 0.0,
+        "n": 1,
+        "errs": 1,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      },
+      "E": {
+        "pts": 0.0,
+        "n": 8,
+        "errs": 8,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      },
+      "F": {
+        "pts": 0.0,
+        "n": 4,
+        "errs": 4,
+        "hedge": 0,
+        "halluc": 0,
+        "stale": 0,
+        "overcall": 0,
+        "confirm": 0
+      }
+    }
+  }
+}
