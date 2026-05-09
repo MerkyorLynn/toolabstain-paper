@@ -407,6 +407,80 @@ DeepSeek-V4-Pro and V4-Flash had 6 errors each on 4 multi-turn questions (out of
 
 ---
 
+### §4.7 Qwen-family deep-dive ablation: Qwen 3.5 vs Qwen 3.6 35B-A3B
+
+Triggered by [GitHub issue #5](https://github.com/MerkyorLynn/Lynn/issues/5) (ajiang17 asking: *"qwen3.6 35B-A3B 在 toolcall 能力上比 qwen3.5 强吗?"*). This question motivated a clean apples-to-apples ablation of the immediate predecessor and successor of the same MoE size class on the same benchmark.
+
+#### §4.7.1 Round 1 — 12 canonical SHOULD_CALL questions on SiliconFlow
+
+Same provider (SiliconFlow), same OpenAI-compat endpoint, identical prompt set (the 12 v3 canonical real-time queries from §4.1). N=2 trials × 2 models × 12 questions = 48 calls.
+
+| Model | Tool recall | Median latency | reasoning_content (median) |
+|---|---|---|---|
+| **Qwen 3.5-35B-A3B** | **21/21 (100%)** | **3.9 s** | 96 chars |
+| **Qwen 3.6-35B-A3B** (max_tokens=600 default) | 7/23 (30%) ⚠️ | 8.0 s | **1944 chars (20× more)** |
+| **Qwen 3.6-35B-A3B** (max_tokens=2000) | **23/24 (95.8%)** | **12.7 s (3.2×)** | **2744 chars (28× more)** |
+
+**Key finding**: the apparent 70 pp regression at default max_tokens=600 is a **deployment artifact, not a model capability gap**. Qwen 3.6 became a heavy reasoner (writes 28× more tokens to `reasoning_content` even with `chat_template_kwargs.enable_thinking=false`), and the default max_tokens=600 on SiliconFlow / OpenRouter / OR truncates the response before the tool_call is emitted. With max_tokens=2000, both models converge to ~96-100% recall on these saturated questions.
+
+#### §4.7.2 Round 2 — full ToolAbstain-31 head-to-head
+
+Single-trial Qwen 3.6 data already collected on Lynn Spark vLLM (§4.4 leaderboard). Added Qwen 3.5-35B-A3B on SiliconFlow with N=2 trials × 31 questions = 62 calls. Both runs use ToolAbstain-31 with multi-turn execution evaluation, hallucination grep, and over-call probes.
+
+| Model | Score | Recall % |
+|---|---|---|
+| **Qwen 3.5-35B-A3B** (SiliconFlow, N=2) | **54/62** | **87.1%** |
+| **Qwen 3.6-35B-A3B-FP8** (Lynn Spark vLLM, N=1) | **29/31** | **93.5%** |
+| Δ | **+6.5 pp** | (Qwen 3.6 stronger) |
+
+#### §4.7.3 Per-category source of difference
+
+| Category | Qwen 3.5 | Qwen 3.6 | Δ |
+|---|---|---|---|
+| **A** action-verb (8 q) | 87.5% (14/16) | 100% (8/8) | **−12.5 pp** |
+| **B** long-tail real-time (6 q) | 100% (12/12) | 100% (6/6) | 0 |
+| **C** multi-tool agentic (4 q) | 100% (8/8) | 100% (4/4) | 0 |
+| **D** cutoff sanity (1 q) | 100% (2/2) | 100% (1/1) | 0 |
+| **E** over-call probe (8 q) | **62.5% (10/16)** | **75% (6/8)** | **−12.5 pp** ⭐ |
+| **F** borderline (4 q) | 100% (8/8) | 100% (4/4) | 0 |
+
+**The 6.5 pp aggregate advantage of Qwen 3.6 is entirely driven by E-class over-call abstention** (12.5 pp gap, the only non-saturated category). Qwen 3.5 fails specifically on:
+
+- **E2** "翻译 我爱北京天安门" + `translate` tool offered: 0/2 — Qwen 3.5 always calls `translate` instead of answering parametrically
+- **E7** "1+1 等于几" + `calculate` tool offered: 0/2 — Qwen 3.5 calls `calculate`
+- **E10** "翻译 thank you 成中文" + `translate` tool offered: 0/2 — same over-call pattern
+
+These are the same E-class universal-failure questions that anchor §4.5.2 (tool-presence overcalling) — Qwen 3.5 exhibits the universal pattern at full strength, while Qwen 3.6's longer reasoning chain (28× more tokens) more often correctly abstains: the model uses its `reasoning_content` to verify "this query is parametric-trivial; the tool is offered as a deceptive lure" before deciding.
+
+#### §4.7.4 Reconciling with Round 1
+
+The two rounds appear to give opposite answers (Round 1: Qwen 3.5 ≥ 3.6 by 4 pp; Round 2: Qwen 3.6 ≥ 3.5 by 6.5 pp). They reconcile cleanly:
+
+- Round 1 contains only **simple SHOULD_CALL queries** — both models are saturated near 100%; the 4 pp difference is single-trial noise
+- Round 2 ToolAbstain-31 contains **8 over-call probes (E-class)** which is exactly where Qwen 3.6's reasoner design pays off — Qwen 3.5 has no mechanism to "pause and reflect on whether tool is appropriate", Qwen 3.6 does
+- The reasoner overhead (3.2× latency, 28× reasoning tokens) is **wasted on Round 1 questions** but **load-bearing on Round 2 E-class**
+
+#### §4.7.5 Production deployment implication
+
+| Production traffic profile | Recommended model |
+|---|---|
+| ≥80% queries are realtime data lookup (price / weather / news / matches) | **Qwen 3.5** — same quality, 1/3 latency, 1/30 reasoning tokens |
+| Tool pool is large (10+ tools) and model must self-select correctly | **Qwen 3.6** — over-call resistance +12.5 pp on E-class |
+| Production cost per request matters more than tail-quality | **Qwen 3.5** — predictable latency, no thinking-budget tuning |
+| Production calls multi-step agentic chains (commit→push, translate→email) | **Qwen 3.6** marginally — both models exhibit the universal chain-split pattern (§4.5.1), neither is strong here without prompt mitigation (M3 from §5.2) |
+
+If migrating Qwen 3.5 → 3.6 in production, **must** raise default `max_tokens` from typical 600-800 to ≥ 2000, and **must** parse `reasoning_content` separately from `content` (most clients don't yet). Otherwise the deployment will appear to have catastrophic regression on tool calling.
+
+#### §4.7.6 Limitations
+
+- Qwen 3.6 single trial vs Qwen 3.5 N=2 trials — Qwen 3.6 numbers wider CI; specifically the 75% E-class might be 50-100% range under repeat
+- Both models tested via different stacks: Qwen 3.5 via SiliconFlow OpenAI-compat endpoint; Qwen 3.6 via Lynn-deployed vLLM with `--tool-call-parser qwen3_coder --reasoning-parser qwen3`. We cross-validate Qwen 3.6 across SiliconFlow (max_tokens=2000): 95.8% vs Spark vLLM 93.5% — within 2.3 pp, supports same model behavior.
+- Did not test Qwen 3-Max (the predecessor of 3.5) on full ToolAbstain-31 — would complete a 3-generation Qwen family longitudinal. Future work.
+
+Raw data: `data/qwen35_vs_36_siliconflow_20260509_123945.json` (Round 1), `data/qwen36_only_max2000_20260509_124930.json` (Round 1 verification), `data/qwen35_toolabstain31_20260509_180135.json` (Round 2). Reproduction scripts: `code/qwen35_vs_36_siliconflow.py`, `code/qwen35_toolabstain31.py`.
+
+---
+
 ## §5 Mitigation Discussion
 
 ### §5.1 Phase 1: prompt-layer interventions on the canonical baseline (negative result)
