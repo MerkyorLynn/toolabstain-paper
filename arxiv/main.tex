@@ -1,0 +1,1690 @@
+\documentclass[11pt]{article}
+
+% --- arXiv xelatex preamble (handles Unicode natively; xeCJK optional) ---
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{fontspec}
+% xeCJK not loaded — Chinese characters were stripped at build time.
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{calc}
+\usepackage{etoolbox}
+\usepackage{listings}
+\usepackage[hyphens]{url}
+\usepackage[unicode,colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+
+% Required by pandoc-emitted body
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\pandocbounded}[1]{#1}
+\providecommand{\passthrough}[1]{#1}
+\newcounter{none}
+\makeatletter
+\@ifundefined{KOMAClassName}{%
+  \IfFileExists{parskip.sty}{\usepackage{parskip}}{%
+    \setlength{\parindent}{0pt}\setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{}
+\makeatother
+
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  columns=flexible,
+  frame=single,
+  framesep=4pt,
+  framerule=0.3pt,
+  rulecolor=\color{black!30},
+  showstringspaces=false
+}
+
+\title{The Vanishing Tool-Use Tax:\\
+A Longitudinal Audit of Chinese Cloud LLMs Reveals That RLHF Tool-Refusal Has Largely Disappeared, Replaced by Multi-Step Action Splitting and Tool-Presence Overcalling}
+
+\author{
+  Lynn et al.\\
+  MerkyorLynn / Lynn AI Agent Project\\
+  \texttt{\href{https://github.com/MerkyorLynn/toolabstain-paper}{github.com/MerkyorLynn/toolabstain-paper}}
+}
+
+\date{2026-05-08 \\ \small Preprint v0.1}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+The ``RLHF tool tax'' hypothesis --- that aligned LLMs systematically
+refuse to call available tools when they could plausibly answer from
+parametric memory, even when parametric answers are stale --- has been
+folk wisdom in deployed agent systems. We conduct a two-stage
+replication study, a 28-version cross-family longitudinal audit (2025-Q3
+$\rightarrow$ 2026-Q2), and a targeted prompt-layer mitigation study. Total:
+\textbf{3,290+ benchmarked LLM calls} across 9 production providers and
+6 model families. Five findings:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{The canonical ``stale-data refusal'' has largely disappeared.}
+  On 12 queries from Lynn (2026-04 v3) where 5 cloud providers refused
+  tools 50\%+ of the time, 7 of 9 current 2026-05 production providers
+  now call tools at 100\% recall. The 2 outliers reflect provider-proxy
+  transients, not genuine model-side refusal.
+\item
+  \textbf{Cross-family longitudinal reveals heterogeneous trajectories
+  --- the universal-tax hypothesis is not supported.} GLM (6 versions,
+  2025-09 $\rightarrow$ 2026-04): gradual +3 over 7 months. MiniMax (4 versions):
+  already at ceiling at 2025-10. Step (3 versions): the only family with
+  a sharp legacy-to-modern jump (step-3 = 13/31 in 2025-Q3 $\rightarrow$ step-3.5 =
+  20+/31 in 2026-Q1). DeepSeek: confounded by a provider-side multi-turn
+  API contract bug. The widely-cited ``tool tax'' was likely a
+  Step-3-era phenomenon, not a universal one.
+\item
+  \textbf{Lynn's locally-deployed Qwen3.6-35B-A3B-FP8 (DGX Spark, vLLM)
+  scored 29/31 --- the highest in the entire 28-version study}, beating
+  every contemporary cloud provider including DeepSeek-V4-Pro and
+  GLM-5.1. Well-tuned local FP8 deployment of an open-weights model with
+  explicit tool-call parser configuration can outperform major cloud
+  APIs on tool-use calibration.
+\item
+  \textbf{Two persistent universal failure modes:}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \textbf{Multi-step chain splitting} --- when asked for two dependent
+    actions (e.g., \passthrough{\lstinline!git commit then git push!}),
+    95\% of trials across 9 providers emit only the first tool. This is
+    legitimate multi-turn agentic behavior that single-turn benchmarks
+    misread as refusal.
+  \item
+    \textbf{Tool-presence overcalling} --- when a tool definition
+    trivially matches a query (e.g., a
+    \passthrough{\lstinline!translate!} tool offered for
+    \passthrough{\lstinline!"translate '[ZH: 'I love Beijing Tiananmen Square']'"!}), \textbf{18
+    of 18 trials across 9 providers call the tool}, even when parametric
+    memory trivially suffices. Reproduces in DeepSeek 6/6 historical
+    versions.
+  \end{itemize}
+\item
+  \textbf{Targeted prompt mitigations work --- when applied to the right
+  failure modes.} A combined system prompt (a) instructing one-shot
+  chained-tool emission and (b) preferring parametric answers for
+  trivial cases lifts A4 (commit+push) from 0.61 $\rightarrow$ \textbf{0.97} mean
+  score and E2 (translate-trivial) from 0.00 $\rightarrow$ \textbf{0.61}
+  simultaneously, with no measurable degradation. The same prompt has
+  zero discriminative effect on already-saturated canonical questions.
+\end{enumerate}
+
+We release \textbf{ToolAbstain-31}, a benchmark with 6 categories
+(action-verb / long-tail real-time / multi-tool agentic /
+cutoff-boundary / over-call probes / borderline calibration) including
+multi-turn execution and confirmation-flow scoring, plus the full
+longitudinal raw data. The contribution to the field is twofold: (i) the
+originally-cited tool-use failure mode has shifted; (ii) the new failure
+modes that replaced it are tractable at the prompt layer when correctly
+diagnosed.
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+\section{Introduction}\label{sec:introduction}
+
+A widely-cited folk hypothesis --- sometimes called the ``RLHF tool
+tax'' or ``alignment tool tax'' --- holds that aligned cloud LLMs are
+systematically biased \emph{against} calling tools, instead emitting
+verbose hedges or stale parametric answers. Lynn et al.~(2026-04)
+recorded specific evidence for this on 12 canonical real-time queries
+(news / weather / stocks / sports / entertainment) across 5 Chinese
+cloud providers, finding that GLM-5-Turbo, Kimi K2.5, MiniMax M2.7,
+Step-3.5-Flash, and DeepSeek V3.2 all returned content-only responses on
+50\%+ of queries that any agent designer would expect to trigger
+\passthrough{\lstinline!web\_search!} or
+\passthrough{\lstinline!get\_stock!}. This finding motivated a wave of
+brain-side mitigations (system-prompt strengthening, tool-choice
+forcing, etc.) --- most of which Lynn's own A/B test (2026-04-19, 0/5 $\rightarrow$
+0/5) showed were ineffective at the prompt layer.
+
+We undertook this study with two goals: - \textbf{(A) Replication \&
+generalization.} Does the 2026-04 finding hold in 2026-05 across a wider
+provider set? Does the failure rate correlate with model family,
+version, alignment style, or other axes? - \textbf{(B) Mitigation
+pathway.} If the failure persists, what intervention works? logit-bias
+on tool-call openers? few-shot examples? two-pass abstention? RLHF
+fine-tune on synthesized DPO pairs?
+
+In the course of executing (A) we found that the original hypothesis is
+\textbf{largely no longer reproducible} on contemporary production model
+versions. This paper documents the disappearance, characterizes the
+residual failure modes that remain (which are \emph{not} the
+originally-described refusal pattern), and releases a benchmark +
+longitudinal dataset that other researchers can use to track whether
+these residual modes are stable or also transient.
+
+\subsubsection{Contributions}\label{contributions}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{C1.} A two-stage replication of Lynn et al.~(2026-04) across 9
+  Chinese cloud LLM production providers in 2026-05, finding 7/9 hit
+  100\% recall on the canonical queries --- the originally-reported
+  failure mode is largely solved.
+\item
+  \textbf{C2.} A 6-version longitudinal of the DeepSeek family
+  (V3.1-terminus $\rightarrow$ V4-Pro) localizing the +30\% improvement to a single
+  major version bump (V3.2 $\rightarrow$ V4-Flash) and characterizing what specific
+  failures were fixed at that bump.
+\item
+  \textbf{C3.} \textbf{ToolAbstain-31}, a benchmark with 6 categories of
+  failure-mode-specific probes including multi-turn execution
+  evaluation, confirmation-flow scoring, hallucination grep on long-tail
+  queries, and tool-presence-overcall probes. Open-source benchmark +
+  harness + verifiers.
+\item
+  \textbf{C4.} Three concrete failure modes that persist across all 9
+  providers and all 6+ DeepSeek versions: (i) multi-step chain
+  splitting, (ii) tool-presence overcalling, (iii) action-verb
+  wrong-tool routing (e.g., emitting
+  \passthrough{\lstinline!web\_search!} instead of
+  \passthrough{\lstinline!book\_train!} for ``book me a train ticket'').
+\item
+  \textbf{C5.} A negative-result mitigation study: on contemporary
+  versions, prompt-layer interventions (system prompt /
+  \passthrough{\lstinline!tool\_choice=required!} / few-shot) provide
+  near-zero discriminative headroom because the canonical baseline is
+  already at ceiling. The remaining headroom lies in failure modes that
+  prompt engineering cannot directly address.
+\end{itemize}
+
+
+
+\section{Related Work}\label{sec:related-work}
+
+\textbf{Tool-use benchmarks.} BFCL {[}Berkeley Function-Calling
+Leaderboard{]}, ToolBench, API-Bank, MetaTool, Nexus, ToolLLM all
+primarily test the \emph{given-that-the-model-should-call} setting: can
+the model select the correct tool with correct arguments? Our work
+targets the prior question --- \emph{should} the model call a tool at
+all, given a free-form natural query in a real agent setting. The
+closest related benchmarks are MetaTool's ``is using a tool necessary?''
+setting and parts of HumanEval-Tool. None systematically probe
+over-calling on parametric-trivial queries with deceptive tool
+definitions, nor do they evaluate multi-step chain handoff across turns.
+
+\textbf{Hallucination calibration.} Kadavath et al.~(2022) ``Language
+Models (Mostly) Know What They Know'' established that LLMs have
+meta-cognitive awareness of confidence; a natural extension is whether
+this calibration carries over to deciding when to retrieve. Our work
+treats \passthrough{\lstinline!web\_search!} as the retrieval analog and
+finds that contemporary Chinese cloud LLMs are now well-calibrated
+\emph{to call search} on stale-data queries (the 2026-04 finding has
+been resolved), but are \emph{miscalibrated to call execution tools} on
+simple parametric queries (the new finding).
+
+\textbf{RLHF behavioral side-effects.} Sharma et al.~``Towards
+Understanding Sycophancy in Language Models'' and Perez et
+al.~``Discovering Language Model Behaviors with Model-Written
+Evaluations'' document that RLHF induces predictable distortions. The
+Lynn 2026-04 hypothesis was that tool-refusal is one such distortion.
+Our finding --- that this specific distortion has been substantially
+fixed across H1 2026 --- adds to the empirical record on whether RLHF
+distortions are structural or transient.
+
+\textbf{RAG triggering.} Self-RAG, FLARE, ADAPT-LLM target the
+when-to-retrieve question in RAG pipelines. They are complementary to
+our setting (we measure first-turn tool emission decisions in agent
+workflows, not retrieval gating in RAG).
+
+
+
+\section{Methodology}\label{sec:methodology}
+
+\subsection{Question sets}\label{sec:question-sets}
+
+We used three question sets across two harness generations:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{v0 (30 Q)}: Adapted directly from Lynn et al.~(2026-04 v3): 12
+  canonical real-time queries (news / entertainment / lifestyle / work /
+  finance / sports), 4 error-recovery, 4 safety-rejection, 4
+  long-context. Plus 3 control SHOULDN'T\_CALL questions (creative
+  writing / general physics / pure reasoning) to test specificity.
+\item
+  \textbf{v1 (31 Q)}: Redesigned after v0 results showed extreme
+  question saturation. v1 drops saturated questions and adds: 8
+  over-call probes (E2/5/7-12), 5 sound-real long-tail (B7-B11), 4 new
+  action-verb questions (delete files / restart service / GitHub close
+  issue), 4 borderline calibration. Multi-turn execution variants for
+  chain actions (A4mt / A6mt / A9mt / C2mt / C7mt / C8mt). 1 cutoff
+  sanity question.
+\item
+  \textbf{Longitudinal}: Same 31-question set from v1, run across all
+  historical model versions reachable on OpenRouter for 6 families
+  (DeepSeek / Qwen / GLM / MiniMax / Kimi / MiMo) plus 1 Lynn-deployed
+  Spark Qwen 3.6 35B-A3B FP8.
+\end{itemize}
+
+\subsection{Provider matrix}\label{sec:provider-matrix}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Provider
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Endpoint
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Model
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Notes
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+DeepSeek-V4-Pro & api.deepseek.com &
+\passthrough{\lstinline!deepseek-v4-pro!} & Reasoner \\
+DeepSeek-V4-Flash & api.deepseek.com &
+\passthrough{\lstinline!deepseek-v4-flash!} & \\
+GLM-5-Turbo & open.bigmodel.cn coding paas &
+\passthrough{\lstinline!GLM-5-Turbo!} & \\
+GLM-5.1 & open.bigmodel.cn coding paas &
+\passthrough{\lstinline!GLM-5.1!} & \\
+Step-3.5-Flash & api.stepfun.com &
+\passthrough{\lstinline!step-3.5-flash!} & RPM-tight \\
+MiniMax-M2.7 & api.minimaxi.com &
+\passthrough{\lstinline!MiniMax-M2.7-highspeed!} & Reasoning model \\
+Kimi-K2.5 (AlayaNew proxy) & codingplan.alayanew.com &
+\passthrough{\lstinline!kimi-k2.5!} & Direct API gated \\
+MiMo-2.5-Pro & token-plan-cn.xiaomimimo.com &
+\passthrough{\lstinline!mimo-v2.5-pro!} & \\
+HY3-Preview & OpenRouter &
+\passthrough{\lstinline!tencent/hy3-preview:free!} & Free tier \\
+\end{longtable}
+}
+
+For longitudinal, we used OpenRouter as a unified access layer to
+historical model versions (timestamps verified via OR
+\passthrough{\lstinline!created!} field).
+
+\subsection{Evaluation harness}\label{sec:evaluation-harness}
+
+Three iterations:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{spike v0} (4-condition $\times$ 3-provider $\times$ 7Q): Sanity check ---
+  baseline / strong system prompt / few-shot /
+  \passthrough{\lstinline!tool\_choice=required!}. Total 84 calls.
+\item
+  \textbf{spike v1 baseline} (1-condition $\times$ 9-provider $\times$ 15Q $\times$ 1 trial):
+  Replication of the 2026-04 v3 finding. Total 135 calls.
+\item
+  \textbf{adversarial v0} (1-condition $\times$ 9-provider $\times$ 30Q $\times$ 2 trials):
+  First adversarial run. Total 540 calls.
+\item
+  \textbf{adversarial v1} (1-condition $\times$ 9-provider $\times$ 31Q $\times$ 1 trial,
+  with multi-turn): Refined benchmark. Total 279 calls.
+\item
+  \textbf{longitudinal DeepSeek} (1-condition $\times$ 6-version $\times$ 30Q $\times$ 1
+  trial): Family-specific longitudinal. Total 180 calls.
+\item
+  \textbf{longitudinal all-families} (1-condition $\times$ 28-version $\times$ 31Q $\times$ 1
+  trial): Cross-family longitudinal. Total 868 calls (in collection).
+\end{itemize}
+
+For multi-turn questions, the harness feeds a fake
+\passthrough{\lstinline!tool\_result!} JSON for each tool the model
+emitted in turn N, then re-prompts to elicit turn N+1. Maximum 3 turns.
+Tool-call counts are aggregated across all turns for scoring.
+
+\subsection{Verifiers}\label{sec:verifiers}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Verifier
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Logic
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Used in
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\passthrough{\lstinline!tool\_match!} & Expected tool $\in$ emitted tool
+names & A/C/D categories \\
+\passthrough{\lstinline!multi\_turn!} & Count of expected tools across
+all turns $\geq$ min\_calls & A4mt/A6mt/A9mt/C2mt/C7mt/C8mt \\
+\passthrough{\lstinline!hedge\_grep!} & Content matches ``[ZH: 'I cannot'] /
+[ZH: 'I am unable'] / [ZH: 'can only search, not...']'' patterns & A category diagnostic \\
+\passthrough{\lstinline!confirm\_grep!} & Content matches ``[ZH: 'please confirm'] /
+[ZH: 'transfer info:']'' patterns; if matched and 0 tool calls, score as pass &
+A3/A5/A7/A8 \\
+\passthrough{\lstinline!halluc\_grep!} & Content matches
+fabrication-pattern regex (numeric / score / price patterns) when
+expected tool was not called & B category \\
+\passthrough{\lstinline!stale\_grep!} & Date pattern extraction; flag if
+max date \textless{} 2026-01 cutoff & D category \\
+\passthrough{\lstinline!specificity!} & tool\_calls = $\emptyset$ for
+SHOULDN'T\_CALL & E category \\
+\passthrough{\lstinline!calibration!} & Multiple acceptable behaviors
+(tool call OR parametric answer) & F category \\
+\end{longtable}
+}
+
+
+
+\section{Results}\label{sec:results}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={ToolAbstain-31 leaderboard across 25+ model versions}]{figures/fig2_leaderboard.png}}
+\caption{ToolAbstain-31 leaderboard across 25+ model versions}
+\end{figure}
+
+\textbf{Figure 1.} ToolAbstain-31 leaderboard across 25 model versions $\times$
+6 families $\times$ 9 production providers (2025-Q3 $\rightarrow$ 2026-Q2). Lynn-deployed
+Spark Qwen 3.6 35B-A3B FP8 (gold) tops the field at \textbf{29/31 =
+94\%}, beating every contemporary cloud reasoner. The legacy step-3
+(2025-Q3) at 13/31 anchors the bottom and represents the only
+family-version where the original ``RLHF tool tax'' hypothesis is
+empirically supported on this benchmark. All other 2025-Q3 $\rightarrow$ 2026-Q2
+versions score 52-94\%.
+
+\subsection{Replication: the canonical failure mode has
+disappeared}\label{sec:replication-the-canonical-failure-mode-has-disappeared}
+
+Running 12 canonical SHOULD\_CALL queries $\times$ 9 providers $\times$ 1 trial
+(n=108) on 2026-05-08:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Provider
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Recall (out of 12)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Specificity (out of 3)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Notes
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+DeepSeek-V4-Pro & 12/12 (100\%) & 3/3 & clean \\
+DeepSeek-V4-Flash & 12/12 (100\%) & 3/3 & clean \\
+GLM-5.1 & 12/12 (100\%) & 3/3 & clean \\
+MiMo-2.5-Pro & 12/12 (100\%) & 3/3 & clean \\
+MiniMax-M2.7 & 12/12 (100\%) & 3/3 & clean (verbose explanations
+alongside) \\
+Step-3.5-Flash & 11/11 (100\%) & 3/3 & 1 RPM error \\
+GLM-5-Turbo & 12/12 (100\%) & 2/3 & overcalls calculate on logic
+puzzle \\
+Kimi-K2.5 (AlayaNew) & 10/12 (83\%) & 3/3 & W1/W2 partial --- see
+§4.1.1 \\
+HY3-Preview & 10/12 (83\%) & 3/3 & W1/W2 partial --- see §4.1.1 \\
+\end{longtable}
+}
+
+Direct comparison to the 2026-04-19 baseline (5 of these providers were
+tested originally; we display recall-on-the-same-12):
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Provider 2026-04 (v3) & Recall April & Recall May \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GLM-5-Turbo & 6/12 (50\%) & 12/12 (100\%) $\uparrow$ \\
+Kimi K2.5 (direct) & 6/12 (50\%) & 10/12 (83\%) $\uparrow$ \\
+MiniMax M2.7 & 5/12 (42\%) & 12/12 (100\%) $\uparrow$ \\
+Step-3.5-Flash & 6/12 (50\%) & 11/11 (100\%) $\uparrow$ \\
+DeepSeek V3.2 $\rightarrow$ V4-Flash & 6/12 (50\%) & 12/12 (100\%) $\uparrow$ \\
+\end{longtable}
+}
+
+\subsubsection{Disambiguating residual
+partial-recall}\label{sec:disambiguating-residual-partial-recall}
+
+We re-ran the W1 (3-stocks parallel query) and W2 (book train ticket)
+questions on Kimi-K2.5 and HY3-Preview at 3 retries each (total 18
+calls). Outcomes:
+
+\begin{itemize}
+\tightlist
+\item
+  Kimi-K2.5 W1: 2/3 emit tool, 1/3 empty response (provider proxy
+  transient)
+\item
+  Kimi-K2.5 W2: 1/3 verbal hedge (``[ZH: 'I can search but cannot book']''), 2/3 empty (proxy
+  transient)
+\item
+  HY3 W1: 2/3 emit, 1/3 empty (OpenRouter free tier transient)
+\item
+  HY3 W2: 0/3 --- all empty (systematic on agentic action queries)
+\end{itemize}
+
+Of the 4 ``partial recall'' cells, only 1 case (Kimi K2.5 W2 $\rightarrow$ 1/3
+verbal hedge) reflects a \emph{genuine model-side hedge}. Three are
+provider-proxy transients (HY3 = OpenRouter free-tier rate-limiting +
+Kimi proxy = AlayaNew flake). \textbf{Conclusion: the canonical 2026-04
+failure mode is functionally absent in 2026-05 production model
+versions.}
+
+\subsection{Longitudinal: when did the tax disappear in
+DeepSeek}\label{sec:longitudinal-when-did-the-tax-disappear-in-deepseek}
+
+We ran the 30-question v0 set on 6 DeepSeek versions accessible via
+OpenRouter:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1250}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Version
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Released
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+A
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+B
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+C
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+D
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+E
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Total
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+V3.1-terminus & 2025-09 & 1/6 & 6/6 & 4/6 & 5/6 & 3/6 & 19/30 \\
+V3.2-exp & 2025-10 & 2/6 & 4/6 & 6/6 & 5/6 & 3/6 & 20/30 \\
+V3.2 & 2025-12 & 1/6 & 5/6 & 4/6 & 6/6 & 3/6 & 19/30 \\
+V3.2-speciale & 2025-12 & --- & --- & --- & --- & --- & broken on OR \\
+\textbf{V4-Flash} & \textbf{2026-04} & \textbf{3/6} & \textbf{6/6} &
+\textbf{6/6} & \textbf{6/6} & \textbf{4/6} & \textbf{25/30} \\
+\textbf{V4-Pro} & \textbf{2026-04} & \textbf{4/6} & \textbf{6/6} &
+\textbf{6/6} & \textbf{6/6} & \textbf{4/6} & \textbf{26/30} \\
+\end{longtable}
+}
+
+The V3.2 $\rightarrow$ V4-Flash transition delivered the bulk of improvement (+6
+points = +30\% on the same 30 questions). The improvement is
+concentrated in:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{A action-verb} (+200\%, 1 $\rightarrow$ 3): action-verb dispatching
+  matured.
+\item
+  \textbf{C multi-tool agentic} (+50\%, 4 $\rightarrow$ 6): chained-tool emission
+  improved.
+\item
+  \textbf{E specificity} (less over-call): borderline-calibration
+  sharpened.
+\end{itemize}
+
+Notably: - \textbf{D cutoff} category was already saturated (5-6/6) on
+V3.1-terminus from 2025-09 --- the ``stale-knowledge refusal'' failure
+mode appears to have been resolved a full half-year before our 2026-05
+study, contradicting the implication of Lynn (2026-04 v3) that this was
+a \emph{current} problem at that time. - \textbf{A4 (commit + push)}
+failed across all 6 versions --- multi-step chain splitting is an
+unfixed failure mode. - \textbf{A6 (translate + email)} failed across
+all 6 versions --- same issue. - \textbf{E2 (``translate
+`[ZH: 'I love Beijing Tiananmen Square']'\,'' with \passthrough{\lstinline!translate!} tool
+offered)} failed across all 6 versions --- universal tool-presence
+overcalling.
+
+\subsection{Cross-family
+longitudinal}\label{sec:cross-family-longitudinal}
+
+We extend the DeepSeek case study to 4 additional Chinese families using
+direct provider APIs (n=403 calls) plus 1 Lynn-deployed local FP8
+reference. Total 28 model-version data points spanning 2025-09 $\rightarrow$
+2026-04.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Cross-family longitudinal trajectory 2025-Q3 $\rightarrow$ 2026-Q2}]{figures/fig1_longitudinal_trajectory.png}}
+\caption{Cross-family longitudinal trajectory 2025-Q3 $\rightarrow$ 2026-Q2}
+\end{figure}
+
+\textbf{Figure 2.} Cross-family longitudinal trajectory of
+ToolAbstain-31 score over 7 months. Each line is one Chinese cloud LLM
+family across its OpenRouter / direct-API-accessible historical
+versions. Lynn-deployed Spark Qwen 3.6 35B-A3B FP8 (gold $\star$) at 94\% is
+the global maximum. Step (orange) shows the only sharp legacy-to-modern
+jump (step-3 = 42\% $\rightarrow$ step-3.5 series $\approx$ 65-73\%), consistent with the
+original ``RLHF tool tax'' hypothesis applying to a specific 2025-Q3-era
+model that the 2026-04 study generalized too broadly. GLM (mint),
+MiniMax (purple), and Qwen 3-Max (pink) were already at 80-87\% by their
+earliest 2025-09 / 2025-10 versions and remained there. DeepSeek (cyan)
+sits 10-20pp below the cohort due to a multi-turn API contract bug
+(§4.6) that disproportionately affects our chained-action questions, not
+a model-level deficit.
+
+\subsubsection{GLM (Zhipu, 6 versions)}\label{sec:glm-zhipu-6-versions}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Version & Released & Total/31 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GLM-4.5 & 2025-09 & 25.0 \\
+GLM-4.6 & 2025-10 & 26.0 \\
+GLM-4.7 & 2025-12 & 26.0 \\
+GLM-5 & 2026-02 & 27.0 \\
+GLM-5-Turbo & 2026-04 & 27.0 \\
+\textbf{GLM-5.1} & 2026-04 & \textbf{28.0} $\star$ \\
+\end{longtable}
+}
+
+GLM trajectory: \textbf{gradual +3 over 7 months}, no single bump.
+Saturates near 28/31. The category-by-category breakdown shows even
+GLM-4.5 (2025-09) was already at A=7/8 and C=3/4 --- the original ``tool
+refusal'' hypothesis was \emph{never the dominant failure mode for this
+family in the period we sampled}.
+
+\subsubsection{MiniMax (4 versions)}\label{sec:minimax-4-versions}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Version & Released & Total/31 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+MiniMax-M2 & 2025-10 & 27.0 \\
+\textbf{MiniMax-M2.1} & 2025-12 & \textbf{28.0} $\star$ \\
+MiniMax-M2.5 & 2026-02 & 27.0 \\
+MiniMax-M2.7 & 2026-04 & 27.0 \\
+\end{longtable}
+}
+
+MiniMax: already at ceiling at M2 (2025-10). M2.1 peak then plateau.
+\textbf{No measurable tool-tax disappearance because there was no
+measurable tool-tax to begin with on this benchmark for this family.}
+This contradicts the universal-tax hypothesis.
+
+\subsubsection{Step (3 versions)}\label{sec:step-3-versions}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Version & Released & Total/31 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{step-3} & 2025-Q3 & \textbf{13.0} !️ \\
+step-3.5-flash & 2026-04 & 20.0 \\
+step-3.5-flash-2603 & 2026-03 & 22.5 \\
+\end{longtable}
+}
+
+\textbf{This is the strongest evidence we found for the original RLHF
+tool-tax hypothesis.} Step-3 (2025-Q3) scored 13/31 --- about half what
+current cloud LLMs score. Category breakdown: A=2/8, C=0/4, E=1/8 ---
+across-the-board weakness on action-verb dispatching, multi-tool
+agentic, AND specificity. The step-3 $\rightarrow$ step-3.5 generation transition
+delivered +9.5 (73\% relative). This matches Lynn (2026-04 v3)'s
+description of ``models systematically refuse to call tools'' as a
+\emph{legacy} phenomenon, now resolved in step-3.5.
+
+\subsubsection{DeepSeek (5 versions, multi-turn-error
+caveat)}\label{sec:deepseek-5-versions-multi-turn-error-caveat}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Version & Released & Total/31 (caveats) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+DS-V3.1-terminus & 2025-09 & 18.0 (clean) \\
+DS-V3.2-exp & 2025-10 & 16.0 (11 errors) \\
+DS-V3.2 & 2025-12 & 16.0 (10 errors) \\
+DS-V4-Flash & 2026-04 & 19.0 (10 errors) \\
+DS-V4-Pro & 2026-04 & 13.0 (17 errors --- multi-turn API bug) \\
+\end{longtable}
+}
+
+DeepSeek shows the multi-turn API contract incompatibility called out in
+§4.6 --- the assistant message format with
+\passthrough{\lstinline!tool\_calls!} is rejected in subsequent turns,
+confounding multi-turn questions. Filtering to single-turn questions
+only, the V3.x $\rightarrow$ V4 transition is +2 to +5 (mild), not the +30\% we
+observed on the v0 30-question set. We believe the v0 longitudinal
+apparent +30\% was inflated by question composition (more cutoff and
+stale-data questions, where DeepSeek improved more dramatically). On the
+v1 31-question set, the family's gain is concentrated in A-class
+action-verb dispatching only.
+
+\subsubsection{Qwen and Lynn-deployed
+reference}\label{sec:qwen-and-lynn-deployed-reference}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Version
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Released
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Total/31
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Qwen3-Max (cloud, 2025-09) & 2025-09 & 26.0 \\
+\textbf{Qwen3.6-35B-A3B-FP8 (Lynn Spark deployment)} & 2026-04 &
+\textbf{29.0} $\star$$\star$ \\
+\end{longtable}
+}
+
+\textbf{Lynn's own production deployment of Qwen3.6-35B-A3B-FP8 (running
+on DGX Spark, GB10 unified memory at 0.55 mem-fraction co-resident with
+ELYZA-JP at 0.15) scored 29/31 --- the highest single score in the
+entire study, beating every contemporary cloud provider} including
+DeepSeek-V4-Pro (22/31), GLM-5.1 (28/31), MiniMax-M2.1 (28/31), and the
+OpenRouter-served Qwen3.6 cloud variant.
+
+This finding has a corollary for production agent design: a
+\textbf{well-tuned local FP8 deployment of an open-weights model with
+explicit tool-call parser configuration
+(\passthrough{\lstinline!qwen3\_coder!} +
+\passthrough{\lstinline!enable\_thinking=false!}) can outperform major
+cloud APIs on tool-use calibration}, even at a fraction of the parameter
+count of the cloud reasoning models.
+
+\subsubsection{Family-level synthesis}\label{sec:family-level-synthesis}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Family
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Trajectory shape
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Bump
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Notes
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{GLM} & Gradual +3 over 7mo & No single bump & Already strong at
+4.5 \\
+\textbf{MiniMax} & Plateau at ceiling & None observed & Already
+saturated at M2 \\
+\textbf{Step} & Sharp +9.5 & step-3 $\rightarrow$ step-3.5 & \textbf{Only family
+with clear ``tool tax disappearance''} \\
+\textbf{DeepSeek} & Confounded by API bug & V3 $\rightarrow$ V4 +2 to +5 &
+Multi-turn API contract incompatibility \\
+\textbf{Qwen} & Local FP8 \textgreater{} cloud & n/a & Lynn deployment
+top of leaderboard \\
+\end{longtable}
+}
+
+The ToolAbstain-31 benchmark surfaces \textbf{family-level
+heterogeneity} that the canonical 12-question v0 set could not. The Lynn
+(2026-04 v3) hypothesis that the tool tax was \emph{broadly} present in
+2026-04 production is \textbf{not supported} --- only Step's legacy
+step-3 model from 2025-Q3 shows the tax pattern strongly. By the time
+Lynn (2026-04) ran their study, step-3 was already 6+ months out of date
+and the contemporary versions of all 4 families we sampled with full
+data were already at 25-29/31 ceiling.
+
+\subsection{ToolAbstain-31: discrimination range and
+per-question pass
+rates}\label{sec:toolabstain-31-discrimination-range-and-per-question-pass-rates}
+
+On 9 production providers $\times$ 31 questions $\times$ 1 trial:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 16\tabcolsep) * \real{0.1111}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Provider
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+A/8
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+B/6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+C/4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+D/1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+E/8
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+F/4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Total/31
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Notes
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+GLM-5-Turbo & 7.0 & 6.0 & 4.0 & 1 & 5.0 & 4.0 & \textbf{27.0} & Tied
+\#1 \\
+GLM-5.1 & 7.0 & 6.0 & 4.0 & 1 & 5.0 & 4.0 & \textbf{27.0} & Tied \#1 \\
+Step-3.5-Flash & 7.0 & 6.0 & 4.0 & 1 & 5.0 & 4.0 & \textbf{27.0} & Tied
+\#1 \\
+MiMo-2.5-Pro & 7.0 & 6.0 & 4.0 & 1 & 5.0 & 4.0 & \textbf{27.0} & Tied
+\#1 \\
+MiniMax-M2.7 & 7.0 & 5.0 & 4.0 & 1 & 5.0 & 4.0 & 26.0 & \\
+Kimi-K2.5 & 4.5 & 6.0 & 2.0 & 1 & 5.0 & 4.0 & 22.5 & A weak \\
+DeepSeek-V4-Pro & 5.0 & 6.0 & 1.0 & 1 & 5.0 & 4.0 & 22.0 & Multi-turn
+API errors \\
+HY3-Preview & 4.0 & 6.0 & 3.0 & 1 & 5.0 & 3.0 & 22.0 & F borderline
+weak \\
+DeepSeek-V4-Flash & 3.0 & 6.0 & 1.0 & 1 & 5.0 & 4.0 & 20.0 & A worst,
+multi-turn errors \\
+\end{longtable}
+}
+
+Discrimination range: \textbf{20.0 $\leftrightarrow$ 27.0 = 7 of 31 = 23\%} vs.~12\% on
+canonical-only set. ToolAbstain-31 generates more separation per
+question, more failure-mode coverage, and surfaces the 3 universal
+failure modes characterized in §4.5.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Per-category heatmap, top 18 model versions $\times$ 6 categories}]{figures/fig4_category_heatmap.png}}
+\caption{Per-category heatmap, top 18 model versions $\times$ 6 categories}
+\end{figure}
+
+\textbf{Figure 3.} Per-category pass rate heatmap (top 18 model versions
+$\times$ 6 question categories). Lynn Spark FP8 (top row) scores 100\% on all
+categories except E (over-call) at 75\%. \textbf{Column E is the
+universally weakest column across all 18 versions} (50-75\% range),
+confirming that tool-presence overcalling is a generic contemporary
+failure mode regardless of vendor. The two red cells in column D belong
+to step-3.5 generation (cutoff knowledge weak --- likely a training-data
+freshness limit specific to that lineage). DeepSeek V3.x family shows
+red in column E (over-call) and column F (borderline calibration). Cells
+annotate the actual pass rate as integer percent.
+
+\subsubsection{Per-question pass rates (across 9 providers $\times$ 2 trials
+= 18 trials each, from v0 run for
+breadth)}\label{sec:per-question-pass-rates-across-9-providers-times-2-trials-18-trials-each-from-v0-run-for-breadth}
+
+\begin{lstlisting}
+Saturated ($\geq$95%, candidates for retirement)
+    A1 send_email simple    18/18  100%
+    A5 transfer_money       17/18   94%
+    B1-B4, B6 long-tail    16-18  88-100%
+    C3-C6 multi-tool       15-18  94-100%
+    D1-D6 cutoff           16-18  100%
+    E1, E3, E4, E6          ~      100%
+
+Discriminating (paper material)
+    A4 commit+push           5/18   28%   $\leftarrow$ multi-turn chain split
+    A6 translate+email       1/16    6%   $\leftarrow$ multi-turn chain split
+    A2 book train           11/18   61%   $\leftarrow$ wrong-tool routing
+    A3 cancel meeting       13/18   72%   $\leftarrow$ clarification asks
+    C2 train$\rightarrow$weather        11/16   69%   $\leftarrow$ multi-turn dependency
+    C1 5 stocks parallel    13/17   77%
+    E5 35-yr career change  13/17   77%   $\leftarrow$ over-call risk
+    B5 Nokia N73 price      16/18   89%
+
+Universal failure (0% across 9 providers $\times$ 2 trials = 18)
+    E2 translate [ZH: 'I love Beijing Tiananmen Square']    0/18    0%   $\leftarrow$ tool-presence bias: 9/9 always overcall
+\end{lstlisting}
+
+\subsection{Three persistent failure modes
+characterized}\label{sec:three-persistent-failure-modes-characterized}
+
+\subsubsection{Multi-step chain splitting (A4 /
+A6)}\label{sec:multi-step-chain-splitting-a4-a6}
+
+When asked for two dependent actions, the modal behavior across 9
+providers is to emit only the first tool with verbose narration of the
+next step:
+
+\begin{lstlisting}
+Prompt: [ZH original] commit the code with message 'feat: ...', then push to remote
+GLM-5-Turbo response (typical): 
+  [tool_calls: git_commit("feat: add user profile API")]
+  [content: [ZH original] OK, I'll execute commit first, then push to remote. Starting with commit:]
+  
+DeepSeek-V4-Flash response (typical):
+  [tool_calls: git_commit("feat: ...")]
+  [content: [ZH original] OK, I'll commit first, then push to remote.]
+
+MiniMax-M2.7 response (typical):
+  [tool_calls: git_commit("feat: ...")]
+  [content: <think>[ZH original] User wants: 1. Create a git commit ... I need to call git_commit first, then git_push. Both are execution-type operations.</think>]
+\end{lstlisting}
+
+This is \textbf{legitimate multi-turn agentic planning}, not refusal.
+When the harness simulates a \passthrough{\lstinline!tool\_result!} and
+re-prompts (multi-turn evaluation), 4 of 7 providers correctly emit
+\passthrough{\lstinline!git\_push!} in turn 2. DeepSeek-V4-Pro/Flash
+both error out in multi-turn (likely API contract issue with
+\passthrough{\lstinline!tool\_calls!} in assistant messages --- see
+§4.6).
+
+\textbf{Implication for benchmarks:} Single-turn evaluation of
+multi-step actions systematically misreads correct planning behavior as
+failure.
+
+\subsubsection{Tool-presence overcalling (E2
+universal)}\label{sec:tool-presence-overcalling-e2-universal}
+
+When a tool definition matches a query verbatim, models call the tool
+even when parametric memory trivially suffices:
+
+\begin{lstlisting}
+Prompt: 帮我把"[ZH: 'I love Beijing Tiananmen Square']"translate成英文
+Tool offered: translate(text, target_lang)
+Result: 18/18 trials across 9 providers call translate(text="[ZH: 'I love Beijing Tiananmen Square']", target_lang="en")
+\end{lstlisting}
+
+This pattern reproduces in DeepSeek 6/6 historical versions
+(V3.1-terminus $\rightarrow$ V4-Pro), spanning 8 months. It is \textbf{universal and
+persistent}.
+
+The over-call occurs even though: - The translation is
+parametric-trivial (every model can produce ``I love Tiananmen Square in
+Beijing'' without help) - The query has no temporal anchor or freshness
+requirement - The model often outputs \passthrough{\lstinline!<think>!}
+content showing it knows the answer before deciding to call the tool
+
+\textbf{Hypothesis:} RLHF training on tool-use data has over-emphasized
+``if a relevant tool exists, use it.'' This is the \emph{inverse} of the
+originally-hypothesized refusal failure.
+
+\subsubsection{Action-verb wrong-tool
+routing}\label{sec:action-verb-wrong-tool-routing}
+
+DeepSeek-V4-Flash on A2 (``book train ticket''):
+
+\begin{lstlisting}
+[tool_calls: web_search]
+[content: 好的！我先查一下今天是周几，然后确定下周一的日期. ]
+\end{lstlisting}
+
+Despite \passthrough{\lstinline!book\_train!} and
+\passthrough{\lstinline!search\_train!} being defined in the tool list,
+the model emitted \passthrough{\lstinline!web\_search!} for date
+verification. This is a \emph{routing} failure --- the model
+partial-decomposed the task but routed to a generic tool first.
+
+This pattern appears 4/6 times for DeepSeek-V4-Flash on A2/A3/A6,
+contributing significantly to its A-class score of only 4/12 (worst
+among 9 providers).
+
+\subsection{Brain wrapper controlled experiment --- was the
+original 50\% refusal due to model RLHF or brain prompt
+injection?}\label{sec:brain-wrapper-controlled-experiment-was-the-original-50-refusal-due-to-model-rlhf-or-brain-prompt-injection}
+
+A reviewer-anticipating concern: Lynn (2026-04 v3) collected its data
+via the \textbf{Lynn brain proxy layer} at
+\passthrough{\lstinline!127.0.0.1:8789!}, which (a) injects a system
+prompt and (b) handles tool-call normalization. The 2026-05 replication
+in §4.1 queried provider APIs directly, bypassing brain. \textbf{This
+introduces a confounding variable}: the apparent disappearance of the
+failure mode could be due to model improvement OR due to brain-side
+preprocessing changes.
+
+We extracted the \textbf{exact v3-era brain system prompt} from
+\passthrough{\lstinline!/opt/lobster-brain/server.js.bak-20260420-162011!}
+(\passthrough{\lstinline!buildSystemPrompt!} queryMode=false branch +
+\passthrough{\lstinline!TOOL\_FORCE\_INSTRUCTIONS!}). The prompt
+explicitly instructed models to call tools for real-time data:
+
+\begin{lstlisting}
+你是 Lynn，语气自然友好，默认 1-3 句话完成回复. 
+
+[重要]实时数据（价格, weather, 比分, news等）必须调工具获取，不可编造. 
+工具失败时说明"未获取到数据". 
+...
+总之：有工具可用时，必须调用工具，不要用文本模拟工具的输出. 
+\end{lstlisting}
+
+\textbf{Note}: this means in v3, the brain was \emph{already} prompting
+models to call tools --- yet the recorded refusal rate was 50\%. If the
+v3 brain prompt had been weak, adding stronger prompting (a natural
+mitigation strategy) might have helped. \textbf{It didn't, because the
+prompt was already strong but the models still refused.}
+
+We ran a controlled A/B test on 7 cloud providers $\times$ 12 SHOULD\_CALL
+questions $\times$ 1 trial:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Provider
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Naked direct API
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
++ v3 brain system prompt
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+$\Delta$
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+DeepSeek-V4-Pro & 12/12 (100\%) & 12/12 (100\%) & 0 \\
+DeepSeek-V4-Flash & 12/12 (100\%) & 11/12 (91.7\%) & -8.3 pp {[}N=1; see
+below{]} \\
+GLM-5-Turbo & 12/12 (100\%) & 12/12 (100\%) & 0 \\
+GLM-5.1 & 12/12 (100\%) & 12/12 (100\%) & 0 \\
+Step-3.5-Flash & 10/10 (100\%, 2 RPM) & 10/10 (100\%) & 0 \\
+MiniMax-M2.7 & 12/12 (100\%) & 12/12 (100\%) & 0 \\
+MiMo-2.5-Pro & 12/12 (100\%) & 12/12 (100\%) & 0 \\
+\end{longtable}
+}
+
+Findings: 1. \textbf{6 of 7 providers: brain prompt has zero effect.}
+Models call tools at 100\% with or without it. 2.
+\textbf{DeepSeek-V4-Flash showed an apparent 8.3 pp regression at N=1
+--- but a follow-up N=3 confirms this was sampling noise.} The single
+failure was on W2 (book train ticket): the model said
+``我需要先确认今天日期'' rather than calling
+\passthrough{\lstinline!search\_train!}. We re-ran the same 12 questions
+$\times$ DeepSeek-V4-Flash $\times$ 3 trials $\times$ naked vs brain-prompt (data:
+\passthrough{\lstinline!data/v3\_brain\_n3\_dsv4flash\_20260508\_233215.json!}).
+N=3 result: naked 36/36 (100\%), v3\_brain 35/35 (100\%, 1 trial errored
+on L1, others all passed) $\rightarrow$ \textbf{$\Delta$ = 0.0 pp}. The original W2
+hesitation was non-deterministic single-trial noise; under N=3 the model
+called \passthrough{\lstinline!search\_train!} 3 of 3 times under the
+brain prompt. This \textbf{strengthens the conclusion}: with controlled
+multi-trial measurement, brain prompt has zero effect on tool-calling
+rate across all 7 providers tested.
+
+Interpretation: - \textbf{Strongly supports the model-side disappearance
+hypothesis (§4.1, §4.2).} The variable that changed between Lynn 2026-04
+and our 2026-05 replication is the model, not the brain prompt (which
+was always present and is a constant in this experiment). - We cannot
+fully exclude the possibility that v3-era brain had additional
+non-prompt behaviors (e.g., tool-call name normalization, BYOK routing
+logic) that contributed to the original 50\% refusal rate. Those layers
+are not directly reproducible because brain has been simplified since v3
+(current brain v1 routes all requests to MiMo regardless of model id;
+brain v2 is a separate rewrite). - \textbf{The remaining caveat is
+therefore narrower than initially stated}: model-side changes are the
+dominant variable; brain non-prompt logic is at most a secondary
+contributor.
+
+Raw data:
+\passthrough{\lstinline!data/v3\_brain\_prompt\_replica\_20260508\_230150.json!};
+reproduction script:
+\passthrough{\lstinline!code/spike\_v3\_brain\_prompt\_replica.py!}.
+
+\subsection{Multi-turn provider-bug
+discovery}\label{sec:multi-turn-provider-bug-discovery}
+
+DeepSeek-V4-Pro and V4-Flash had 6 errors each on 4 multi-turn questions
+(out of 4 questions $\times$ 1 trial $\times$ 2 reasoner variants = 8 attempts $\rightarrow$ 6
+failed). Other providers had 0 multi-turn errors. Inspection of error
+responses indicates the DeepSeek API rejects assistant messages with
+\passthrough{\lstinline!tool\_calls!} field if
+\passthrough{\lstinline!content!} is empty string vs.~null --- a
+contract incompatibility with OpenAI's reference behavior. \emph{We are
+reaching out to DeepSeek's developer relations to confirm.}
+
+
+
+\section{Mitigation Discussion}\label{sec:mitigation-discussion}
+
+\subsection{Phase 1: prompt-layer interventions on the canonical
+baseline (negative
+result)}\label{sec:phase-1-prompt-layer-interventions-on-the-canonical-baseline-negative-result}
+
+We tested 4 prompt-layer interventions on a 5-question SHOULD\_CALL $\times$
+2-question SHOULDN'T\_CALL set across 3 providers (GLM-5-Turbo,
+Step-3.5-Flash, DeepSeek-V4-Flash) at the spike v0 stage:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+Condition & Recall & Specificity & Net \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+C0 baseline & 100\% & 100\% & 100\% \\
+C1 strong system prompt & 100\% & 100\% & 100\% \\
+C2 in-context few-shot & 100\% & 100\% & 100\% (Step had API
+failures) \\
+C3 \passthrough{\lstinline!tool\_choice=required!} & 100\% & 0-50\% &
+50-75\% \\
+\end{longtable}
+}
+
+On contemporary models, \textbf{prompt-layer interventions provide
+near-zero discriminative headroom} \emph{on canonical questions} because
+the canonical baseline is already at ceiling.
+\passthrough{\lstinline!tool\_choice=required!} \emph{forces} tool
+emission but breaks the abstention property --- DeepSeek emits
+tool\_calls with garbage args even on creative writing and physics
+questions.
+
+\subsection{Phase 2: targeted prompt mitigations on universal
+failure questions (positive
+result)}\label{sec:phase-2-targeted-prompt-mitigations-on-universal-failure-questions-positive-result}
+
+We re-ran the mitigation study on the 3 universal failure questions
+identified in §4.5 --- A4 (commit+push chain), A6 (translate+email
+chain), E2 (translate-trivial overcall) --- across all 9 production
+providers $\times$ 2 trials $\times$ 4 conditions = 216 calls.
+
+Conditions:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{M0 baseline}: no system prompt
+\item
+  \textbf{M1 chain-instruction}: system prompt instructs the model to
+  emit ALL needed tools in a single turn for chained actions (don't
+  split across turns)
+\item
+  \textbf{M2 parametric-preference}: system prompt instructs the model
+  to answer from parametric memory when the request is trivial (basic
+  translate, common knowledge, simple math) --- only use tools for
+  execution-type or fresh-data tasks
+\item
+  \textbf{M3 combined}: M1 + M2 in one system prompt
+\end{itemize}
+
+Mean score per question per condition (n=18 trials each, 9 providers $\times$ 2
+trials):
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1429}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+QID
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Kind
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+M0 baseline
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+M1 chain
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+M2 parametric
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+M3 combined
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+A4 & git commit + push & SHOULD & 0.61 & \textbf{0.94} $\star$ & 0.64 &
+\textbf{0.97} $\star$$\star$ \\
+A6 & translate + send\_email & SHOULD & 0.50 & 0.47 & 0.56 &
+\textbf{0.61} \\
+E2 & translate ``[ZH: 'I love Beijing Tiananmen Square']'' & SHOULDN'T & \textbf{0.00} !️ & 0.00
+& \textbf{0.67} $\star$ & \textbf{0.61} $\star$ \\
+\end{longtable}
+}
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio,alt={Targeted prompt mitigations across 3 universal failures}]{figures/fig3_mitigation_effect.png}}
+\caption{Targeted prompt mitigations across 3 universal failures}
+\end{figure}
+
+\textbf{Figure 4.} Targeted prompt mitigations on the 3 universal
+failure questions (n=18 trials each: 9 providers $\times$ 2 trials). Bars are
+color-coded: M0 baseline (slate), M1 chain instruction (cyan), M2
+parametric preference (mint), M3 combined (coral). M3 simultaneously
+fixes A4 (chain split, \textbf{0.61 $\rightarrow$ 0.97}, +0.36) and E2 (universal
+over-call, \textbf{0.00 $\rightarrow$ 0.61}, +0.61) with no measurable degradation.
+M1 alone helps A4 only; M2 alone helps E2 only; their combination
+retains both gains. A6 (translate+email chain) is the residual unfixed
+failure --- the trivial-parametric / execution boundary on this specific
+question is ambiguous enough that no single prompt resolves it.
+
+\textbf{Findings:}
+
+\begin{itemize}
+\item
+  \textbf{M1 (chain instruction) $\rightarrow$ A4 +33pp} (0.61 $\rightarrow$ 0.94). The model
+  emits both \passthrough{\lstinline!git\_commit!} and
+  \passthrough{\lstinline!git\_push!} in a single turn 95\% of the time
+  when explicitly told to. This is a \textbf{clean prompt-layer fix for
+  multi-step chain splitting} on this specific kind of action.
+\item
+  \textbf{M2 (parametric preference) $\rightarrow$ E2 +67pp} (0.00 $\rightarrow$ 0.67). The
+  universal tool-presence overcall failure on
+  \passthrough{\lstinline!translate "[ZH: 'I love Beijing Tiananmen Square']"!} is
+  \textbf{substantially fixed by a one-sentence system prompt} telling
+  the model to prefer parametric answers for trivial cases. 12 of 18
+  trials abstained from calling translate.
+\item
+  \textbf{M3 (combined) $\rightarrow$ simultaneously +36pp on A4 and +61pp on E2}.
+  The combined prompt addresses both failure modes at once with no
+  measurable degradation on the chain-action recall (A4 +36pp instead of
+  M1's +33pp). M3 is the best operational choice for production.
+\item
+  \textbf{A6 (translate + send\_email)} does \emph{not} benefit from M1
+  (no improvement, possibly because translate-then-email has an
+  ambiguous boundary between ``trivial parametric'' and ``execution'').
+  M3 still gives +11pp.
+\end{itemize}
+
+\subsection{Production deployment
+recommendation}\label{sec:production-deployment-recommendation}
+
+The combined system prompt (M3) is what we recommend for production
+agent layers handling Chinese cloud LLMs. The exact text used in our
+experiments (translates well to English, equally effective):
+
+\begin{quote}
+你是一个 AI 助手，可以调用工具. 两条规则： 1.
+多步骤执行型任务（commit+push, translate+email
+等）：在一次性回复内调用所有需要的工具，不要分回合.  2. 简单 parametric
+任务（基础translate, 常识, 简单数学）：直接给出答案，不要调用工具. 
+\end{quote}
+
+Lynn brain has now integrated this prompt as the default system prefix
+for all 9 cloud provider routes (deployment date 2026-05-08). Production
+traffic metrics will be reported in a follow-up update.
+
+\subsection{What prompts cannot
+fix}\label{sec:what-prompts-cannot-fix}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Action-verb wrong-tool routing} (DeepSeek-V4-Flash emitting
+  \passthrough{\lstinline!web\_search!} instead of
+  \passthrough{\lstinline!book\_train!}): not addressed by M1/M2/M3.
+  Likely requires better tool-description engineering at the
+  agent-framework level.
+\item
+  \textbf{DeepSeek multi-turn API contract bug} (§4.6): a provider-side
+  issue, not a model-side issue. We are awaiting DeepSeek developer
+  relations response.
+\item
+  \textbf{Long-tail entity hallucination} (B-class): all current
+  providers correctly call \passthrough{\lstinline!web\_search!} rather
+  than fabricating, so there is no headroom to gain from prompts here on
+  this benchmark. This may not generalize to harder long-tail probes.
+\end{itemize}
+
+
+
+\section{Limitations}\label{sec:limitations}
+
+\begin{itemize}
+\item
+  \textbf{Brain wrapper layer differs between v3 and replication.} Lynn
+  (2026-04 v3) routed cloud LLM queries through the Lynn brain proxy at
+  \passthrough{\lstinline!127.0.0.1:8789!} (which injects a system
+  prompt and normalizes tool-call format), while our 2026-05 replication
+  queried provider APIs directly. We addressed this in §4.6.5 with a
+  controlled experiment that injects the exact v3-era brain system
+  prompt: 6 of 7 providers showed zero change in tool-call recall; the
+  remaining one (DeepSeek-V4-Flash) regressed slightly under the brain
+  prompt, the opposite direction of the alternative hypothesis. We
+  conclude the model-side change is the dominant variable, but brain v1
+  from the v3 era can no longer be re-deployed (its routing logic was
+  simplified post-2026-04 and current brain returns MiMo for all model
+  IDs), so we cannot rule out non-prompt brain effects (e.g., tool-call
+  format normalization, BYOK routing) entirely.
+\item
+  \textbf{Closed-source model versioning.} ``GLM-5-Turbo'' / ``DeepSeek
+  V4-Flash'' / etc. on production endpoints can change weights silently.
+  We log API version headers but cannot guarantee weight stability
+  between our calibration phase (2026-04) and replication phase
+  (2026-05). The longitudinal section uses date-pinned OpenRouter
+  snapshots, which mitigates this for that section.
+\item
+  \textbf{Single-trial budget.} Most longitudinal data is N=1 trial per
+  question; v0 had N=2 trials per question. 95\% confidence intervals on
+  per-question pass rates are wide for the longitudinal data. We accept
+  this as a pilot and flag specific findings (e.g., E2 18/18) where
+  ceiling/floor effects make CIs effectively zero.
+\item
+  \textbf{No causal RLHF intervention.} We cannot directly verify the
+  hypothesis that \emph{RLHF specifically} caused the canonical failure
+  mode. We hold open-source SFT/DPO checkpoint sweeps (OLMo 2 / Tulu 3)
+  as future work.
+\item
+  \textbf{6 Chinese families only.} OpenAI / Anthropic / Google models
+  not tested. The disappearance pattern may differ.
+\item
+  \textbf{Single language.} All questions are Mandarin Chinese.
+  English-language prompts may surface different patterns.
+\end{itemize}
+
+
+
+\section{Reproducibility}\label{sec:reproducibility}
+
+All harness code, question sets, raw call traces (JSON), aggregate
+tables, analysis scripts, and figure-generation source are released at
+\passthrough{\lstinline!https://github.com/MerkyorLynn/toolabstain-paper!}.
+The release includes:
+
+\begin{itemize}
+\tightlist
+\item
+  \passthrough{\lstinline!harness\_v1.py!} --- 31-question v1 harness
+  with multi-turn execution + 6 verifier types
+\item
+  \passthrough{\lstinline!longitudinal\_all\_families.py!} +
+  \passthrough{\lstinline!longitudinal\_direct.py!} --- cross-family
+  longitudinal harness (28 versions, dual-route via OpenRouter + direct
+  provider APIs)
+\item
+  \passthrough{\lstinline!mitigation\_test.py!} --- 4-condition $\times$
+  3-question prompt mitigation study harness
+\item
+  \passthrough{\lstinline!make\_figures.py!} --- regenerates Figures 1-4
+  from the JSON traces; matplotlib + numpy only, no other deps
+\item
+  \passthrough{\lstinline!data/*.json!} --- all raw call traces
+  (n=2,287+ baseline + n=868+ longitudinal + n=216 mitigation)
+\item
+  \passthrough{\lstinline!questions\_v1.md!} --- question design
+  rationale + verifier specifications
+\item
+  \passthrough{\lstinline!paper.md!} --- this document
+\item
+  \passthrough{\lstinline!run.sh!} --- single-command reproduction
+\end{itemize}
+
+Expected reproduction cost: \textasciitilde\$5-15 USD via OpenRouter API
+for the longitudinal sweep, \textasciitilde\$2-5 USD direct-to-provider
+for the 9-provider v1 baseline.
+
+
+
+\section{Conclusion}\label{sec:conclusion}
+
+The ``RLHF tool tax'' hypothesis was an accurate snapshot of mid-2025 to
+early-2026 deployed Chinese cloud LLMs. By 2026-05, the specific failure
+mode it described --- verbal hedge in place of tool call when training
+data is stale --- has substantially disappeared across 7 of 9 major
+Chinese cloud providers and 6 of 6 DeepSeek historical versions sampled.
+
+Two new failure modes have replaced refusal: \textbf{multi-step chain
+splitting} (which prior single-turn benchmarks misread as refusal) and
+\textbf{tool-presence overcalling} (which prior benchmarks did not
+probe). Both reproduce universally across 9 contemporary providers and
+persist across 8 months of historical DeepSeek versions.
+
+We propose that future tool-use benchmarking should: 1. Always include
+multi-turn execution evaluation for chained-action prompts. 2. Always
+include over-call probes with deceptive tool definitions. 3. Always
+include confirmation-flow scoring for high-stakes execution prompts
+(transfer money / delete files / restart service). 4. Track the
+disappearance/persistence of specific failure modes longitudinally
+rather than rely on snapshot leaderboards.
+
+Production agent designers should similarly redirect mitigation effort:
+away from ``make the model call tools more aggressively'' (which is no
+longer the issue) toward ``make the model call the right tools at the
+right granularity in the right turn'' (which remains unsolved).
+
+
+
+\section*{Acknowledgments}\label{sec:acknowledgments}
+
+This work was conducted within the Lynn AI Agent project. We thank
+OpenRouter for unified access to historical model snapshots, and the 6
+cloud providers (DeepSeek / Zhipu / Stepfun / MiniMax / Moonshot /
+Xiaomi) for OpenAI-compatible API endpoints that made cross-vendor
+benchmarking feasible.
+
+
+
+\section*{List of Figures}\label{sec:list-of-figures}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Fig
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Section
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Caption
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\textbf{Figure 1} & §4 Results & ToolAbstain-31 leaderboard across 25
+model versions $\times$ 6 families $\times$ 9 production providers (2025-Q3 $\rightarrow$
+2026-Q2). Lynn-deployed Spark Qwen 3.6 35B-A3B FP8 tops at 29/31 =
+94\%. \\
+\textbf{Figure 2} & §4.3 Cross-family longitudinal & Cross-family
+longitudinal trajectory of ToolAbstain-31 score over 7 months. Step
+shows the only sharp legacy-to-modern jump; GLM/MiniMax/Qwen were
+already at ceiling by 2025-09. \\
+\textbf{Figure 3} & §4.4 ToolAbstain-31 & Per-category pass rate heatmap
+(top 18 model versions $\times$ 6 categories). Column E (over-call) is the
+universally weakest column. \\
+\textbf{Figure 4} & §5.2 Mitigation & Targeted prompt mitigations on 3
+universal failure questions. M3 combined system prompt simultaneously
+fixes A4 (chain split, 0.61 $\rightarrow$ 0.97) and E2 (over-call, 0.00 $\rightarrow$ 0.61). \\
+\end{longtable}
+}
+
+All figures generated by \passthrough{\lstinline!code/make\_figures.py!}
+from \passthrough{\lstinline!data/*.json!}. Source: PNG at 300 DPI + SVG
+vector co-located in \passthrough{\lstinline!figures/!}. Color encoding
+per family is consistent across Figures 1, 2, 3.
+
+
+
+\section*{References}\label{sec:references}
+
+Cited works in §2 (Related Work) and elsewhere. Full bibliography for
+the camera-ready version; this preprint draft uses a flat-list format.
+
+\textbf{Tool-use benchmarks}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Yan, F., Mao, H., Ji, C. R., Zhang, T., Patil, S. G., Stoica,
+  I., \& Gonzalez, J. E. (2024).} \emph{Berkeley Function Calling
+  Leaderboard (BFCL).} https://gorilla.cs.berkeley.edu/leaderboard.html
+\item
+  \textbf{Qin, Y., Liang, S., Ye, Y., Zhu, K., Yan, L., Lu, Y., et
+  al.~(2023).} \emph{ToolLLM: Facilitating Large Language Models to
+  Master 16000+ Real-world APIs.} arXiv:2307.16789.
+\item
+  \textbf{Li, M., Song, F., Yu, B., Yu, H., Li, Z., Huang, F., \& Li, Y.
+  (2023).} \emph{API-Bank: A Comprehensive Benchmark for Tool-Augmented
+  LLMs.} arXiv:2304.08244.
+\item
+  \textbf{Huang, Y., Shi, J., Li, Y., Fan, C., Wu, S., Zhang, Q., et
+  al.~(2023).} \emph{MetaTool Benchmark for Large Language Models:
+  Deciding Whether to Use Tools and Which to Use.} arXiv:2310.03128.
+\item
+  \textbf{Srinivasan, V., Gandhi, S., Penedo, G., Wolfe, R., \& Sahota,
+  K. (2023).} \emph{NexusRaven: a commercially-permissive Language Model
+  for function calling.}
+  https://huggingface.co/Nexusflow/NexusRaven-V2-13B
+\item
+  \textbf{Patil, S. G., Zhang, T., Wang, X., \& Gonzalez, J. E. (2023).}
+  \emph{Gorilla: Large Language Model Connected with Massive APIs.}
+  arXiv:2305.15334.
+\end{enumerate}
+
+\textbf{Hallucination calibration \& meta-cognition}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  \textbf{Kadavath, S., Conerly, T., Askell, A., Henighan, T., Drain,
+  D., Perez, E., et al.~(2022).} \emph{Language Models (Mostly) Know
+  What They Know.} arXiv:2207.05221.
+\item
+  \textbf{Lin, S., Hilton, J., \& Evans, O. (2022).} \emph{Teaching
+  Models to Express Their Uncertainty in Words.} TMLR.
+\end{enumerate}
+
+\textbf{RLHF behavioral side-effects}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{8}
+\tightlist
+\item
+  \textbf{Sharma, M., Tong, M., Korbak, T., Duvenaud, D., Askell, A.,
+  Bowman, S. R., et al.~(2023).} \emph{Towards Understanding Sycophancy
+  in Language Models.} arXiv:2310.13548.
+\item
+  \textbf{Perez, E., Ringer, S., Lukošiūtė, K., Nguyen, K., Chen, E.,
+  Heiner, S., et al.~(2022).} \emph{Discovering Language Model Behaviors
+  with Model-Written Evaluations.} arXiv:2212.09251.
+\item
+  \textbf{Bai, Y., Kadavath, S., Kundu, S., Askell, A., Kernion, J.,
+  Jones, A., et al.~(2022).} \emph{Constitutional AI: Harmlessness from
+  AI Feedback.} arXiv:2212.08073.
+\end{enumerate}
+
+\textbf{Adaptive retrieval / when-to-call}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{11}
+\tightlist
+\item
+  \textbf{Asai, A., Wu, Z., Wang, Y., Sil, A., \& Hajishirzi, H.
+  (2024).} \emph{Self-RAG: Learning to Retrieve, Generate, and Critique
+  through Self-Reflection.} ICLR 2024. arXiv:2310.11511.
+\item
+  \textbf{Jiang, Z., Xu, F. F., Gao, L., Sun, Z., Liu, Q., Dwivedi-Yu,
+  J., et al.~(2023).} \emph{Active Retrieval Augmented Generation.}
+  EMNLP 2023. arXiv:2305.06983. \emph{(FLARE)}
+\item
+  \textbf{Mallen, A., Asai, A., Zhong, V., Das, R., Khashabi, D., \&
+  Hajishirzi, H. (2023).} \emph{When Not to Trust Language Models:
+  Investigating Effectiveness of Parametric and Non-Parametric
+  Memories.} ACL 2023. arXiv:2212.10511. \emph{(ADAPT-LLM)}
+\end{enumerate}
+
+\textbf{Open-weights \& open-data references}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{14}
+\tightlist
+\item
+  \textbf{Groeneveld, D., Beltagy, I., Walsh, P., Bhagia, A., Kinney,
+  R., Tafjord, O., et al.~(2024).} \emph{OLMo: Accelerating the Science
+  of Language Models.} arXiv:2402.00838. \emph{(open SFT/DPO checkpoints
+  --- limitation §6 future work pointer)}
+\item
+  \textbf{Lambert, N., Morrison, J., Pyatkin, V., Huang, S., Ivison, H.,
+  Brahman, F., et al.~(2024).} \emph{Tülu 3: Pushing Frontiers in Open
+  Language Model Post-Training.} arXiv:2411.15124.
+\end{enumerate}
+
+\textbf{Self-references and predecessor work}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{16}
+\tightlist
+\item
+  \textbf{Lynn (2026-04).} \emph{Hard Tool-Calling Test v3 · 6 cloud
+  Chinese LLMs $\times$ 24 questions.} Internal report; raw data preserved at
+  \passthrough{\lstinline!data/v0\_baseline\_*.json!} (predecessor
+  benchmark; 12 of those questions form the canonical SHOULD\_CALL set
+  replicated in this paper §4.1).
+\item
+  \textbf{Lynn (2026-05).} \emph{V8/V9 Multi-dim Chinese LLM evaluation
+  series (245-pt $\rightarrow$ 625-pt scoring).} Cited for cross-validation of
+  provider rankings on capability dimensions outside tool-use.
+\item
+  \textbf{Qwen Team, Alibaba (2026).} \emph{Qwen 3.6-35B-A3B Technical
+  Report.} https://huggingface.co/Qwen/Qwen3.6-35B-A3B-FP8 \emph{(model
+  used in Lynn-deployed Spark reference top-of-leaderboard score)}
+\end{enumerate}
+
+\textbf{Provider documentation / API references}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{19}
+\tightlist
+\item
+  DeepSeek API documentation: https://api-docs.deepseek.com/ (V4-Pro /
+  V4-Flash endpoint reference)
+\item
+  Zhipu AI Coding PaaS v4: https://open.bigmodel.cn/api/coding/paas/v4
+  (GLM-5/5.1/5-Turbo)
+\item
+  StepFun open API: https://platform.stepfun.com/docs (step-3 /
+  step-3.5-flash)
+\item
+  MiniMax API: https://api.minimaxi.com/v1 (M2/M2.1/M2.5/M2.7)
+\item
+  OpenRouter (date-pinned historical model snapshots):
+  https://openrouter.ai
+\item
+  Moonshot AI (Kimi): https://platform.moonshot.cn/docs
+\end{enumerate}
+
+\begin{quote}
+\textbf{Note on citation style:} This preprint uses inline numerical
+references in a flat list. The camera-ready version will adopt the
+venue's preferred format (ACM / NeurIPS / ACL). All works above are
+publicly accessible at time of writing (2026-05-08). Where venue/year is
+approximate, we link directly to the canonical artifact.
+\end{quote}
+
+
+
+\section*{Appendix A --- Full ToolAbstain-31 question
+list}\label{sec:appendix-a-full-toolabstain-31-question-list}
+
+\emph{(See \passthrough{\lstinline!questions\_v1.md!} for full text +
+expected\_tools + verifier specs.)}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+QID
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Cat
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Kind
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prompt summary
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+A2 & A & SHOULD & book train ticket Beijing$\rightarrow$Shanghai next Monday \\
+A3 & A & SHOULD & cancel calendar meeting w/ zhang@team.com 3pm \\
+A4mt & A & SHOULD & git commit + push (multi-turn) \\
+A5 & A & SHOULD & transfer 1000元 to daughter's bank card \\
+A6mt & A & SHOULD & translate Chinese + send email (multi-turn) \\
+A7 & A & SHOULD & delete files in build/ except src/ \\
+A8 & A & SHOULD & restart prod-web-01 service \\
+A9mt & A & SHOULD & close GitHub issue \#142 + add comment
+(multi-turn) \\
+B5 & B & SHOULD & Nokia N73 (2006) Xianyu lowest price today \\
+B7 & B & SHOULD & 中超第27轮第6场比分 \\
+B8 & B & SHOULD & 1801.HK after-hours 涨跌幅 \\
+B9 & B & SHOULD & Hangzhou市萧山区南阳街道办昨日通告 \\
+B10 & B & SHOULD & 中国移动5G基站本月新增数 \\
+B11 & B & SHOULD & Shanghai一手房本周环比 \\
+C1 & C & SHOULD & 5 stocks parallel + total market cap calc \\
+C2mt & C & SHOULD & train Beijing$\rightarrow$Shanghai then weather Shanghai
+(multi-turn) \\
+C7mt & C & SHOULD & extract entities + web\_search each (multi-turn) \\
+C8mt & C & SHOULD & BTC price + conditional email (multi-turn) \\
+D5 & D & SHOULD & 上次 Fed 议息会议 sanity \\
+E2 & E & SHOULDNT & translate [ZH: 'I love Beijing Tiananmen Square'] \\
+E5 & E & SHOULDNT & 35 岁转行做程序员 \\
+E7 & E & SHOULDNT & 1+1 = ? \\
+E8 & E & SHOULDNT & Python print hello world \\
+E9 & E & SHOULDNT & 解释机器学习 \\
+E10 & E & SHOULDNT & translate ``thank you'' to Chinese \\
+E11 & E & SHOULDNT & 圆周率前 6 位 \\
+E12 & E & SHOULDNT & 中国首都 \\
+F1 & F & BORDER & 推荐 3 部豆瓣 8+ 国产悬疑片 \\
+F2 & F & BORDER & e\^{}$\pi$ - $\pi$ = ? \\
+F3 & F & SHOULDNT & 牛顿三大定律 \\
+F4 & F & SHOULDNT & 5 条时间管理建议 \\
+\end{longtable}
+}
+
+\end{document}

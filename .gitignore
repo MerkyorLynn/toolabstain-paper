@@ -5,3 +5,12 @@ __pycache__/
 .venv/
 *.egg-info/
 node_modules/
+
+# arXiv build intermediates
+arxiv/paper_raw.tex
+arxiv/submission/
+arxiv/*.aux
+arxiv/*.log
+arxiv/*.out
+arxiv/*.toc
+arxiv/*.pdf
